@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SHine-K Control Console — 엣지 AI 영상무전송 안전관제</title>
+<meta name="description" content="SHine-K 관제 콘솔: 시뮬레이션 디지털 트윈과 실제 웹캠 엣지 AI가 하나의 이벤트 버스를 공유하는 영상무전송 안전관제 데모" />
+<meta property="og:title" content="SHine-K Control Console" />
+<meta property="og:description" content="Edge-AI, video-free worker safety monitoring — simulation twin + real in-browser MoveNet, one event bus." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233182F6'/%3E%3Ccircle cx='16' cy='9' r='3' fill='white'/%3E%3Cpath d='M16 12v8M16 14l-5 4M16 14l5 4M16 20l-4 7M16 20l4 7' stroke='white' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.19/index.min.css" />
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/console.css" />
+</head>
+<body class="theme-dark">
+
+<div id="sr-announce" class="sr-only" role="alert" aria-live="assertive"></div>
+<header class="topbar">
+  <a class="brand" href="index.html" aria-label="SHine-K 소개 페이지로">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#3182F6"/><circle cx="16" cy="9" r="3" fill="#fff"/><path d="M16 12v8M16 14l-5 4M16 14l5 4M16 20l-4 7M16 20l4 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+    <span>SHine-K <small>CONTROL</small></span>
+  </a>
+
+  <nav class="tabs" aria-label="콘솔 화면">
+    <button class="tab" data-route="twin">관제 트윈<span class="en">TWIN · SIM</span></button>
+    <button class="tab" data-route="live">라이브<span class="en">LIVE · EDGE</span></button>
+    <button class="tab" data-route="agents">에이전트<span class="en">12-AGENT</span></button>
+    <button class="tab" data-route="events">이벤트<span class="en">SESSION</span></button>
+    <button class="tab" data-route="evidence">근거<span class="en">EVIDENCE</span></button>
+  </nav>
+
+  <span class="spacer"></span>
+  <span class="badge ai" id="cc-org" style="display:none"></span>
+  <span class="clock mono" id="clock">--:--:--</span>
+  <span class="pill-online"><i></i>EDGE ONLINE</span>
+  <a class="paper-link" href="portal.html" id="portal-link">포털</a>
+  <a class="paper-link" href="index.html">논문 소개 ↗</a>
+</header>
+
+<div class="shell">
+  <main class="stage">
+
+    <!-- ═══════════ #twin ═══════════ -->
+    <section class="route" id="route-twin">
+      <span class="mode-badge sim">⟦ SIMULATION ⟧ 합성 데이터 · 시나리오 주입 가능 — 실제 근로자 아님</span>
+
+      <div class="panel">
+        <div class="site-tabs" id="site-tabs" role="group" aria-label="사이트 선택"></div>
+        <div class="map-wrap">
+          <canvas id="map" width="700" height="380" aria-label="공장 평면 디지털 트윈"></canvas>
+          <span class="map-hint">CONTROL TWIN — reconstructed from de-identified skeletons · no video received</span>
+        </div>
+
+        <div class="cam-wall" id="cam-wall">
+          <div class="cam-tile"><canvas data-zone="press" width="230" height="144"></canvas></div>
+          <div class="cam-tile"><canvas data-zone="weld" width="230" height="144"></canvas></div>
+          <div class="cam-tile"><canvas data-zone="logis" width="230" height="144"></canvas></div>
+          <div class="cam-tile live-slot" id="live-slot" role="button" tabindex="0" aria-label="라이브 모드로 이동">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="1.8" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            <span class="lbl" id="live-slot-lbl">CAM-07 · 내 카메라 연결</span>
+          </div>
+        </div>
+
+        <div class="scenario-bar" role="group" aria-label="시나리오 주입">
+          <button class="sc-btn danger" data-sc="fall">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="17" cy="5" r="2.5"/><path d="M15 8l-6 4 3 3-5 6M9 12l-5-1M12 15l6 2"/></svg>
+            낙상 주입</button>
+          <button class="sc-btn warn" data-sc="ppe">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14a8 8 0 0116 0v3H4v-3zM12 6V3M2 20h20"/></svg>
+            PPE 위반</button>
+          <button class="sc-btn danger" data-sc="fire">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22c4 0 7-3 7-7 0-5-4-6-4-10-3 1-4 4-4 6-1-1-2-2-2-4-2 2-4 4-4 8 0 4 3 7 7 7z"/></svg>
+            화재 발화</button>
+          <button class="sc-btn warn" data-sc="heat">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 14.8V5a2 2 0 10-4 0v9.8a4 4 0 104 0zM20 4h3M20 8h3"/></svg>
+            온열 스트레스</button>
+          <button class="sc-btn warn" data-sc="inactive">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            무동작</button>
+          <button class="sc-btn ok" data-sc="reset">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 109-9M3 3v6h6"/></svg>
+            정상 복귀</button>
+          <button class="sc-btn" id="btn-autopilot">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            오토파일럿</button>
+          <button class="sc-btn" id="btn-tts" aria-pressed="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 010 7M19 5a9 9 0 010 14"/></svg>
+            음성 알람</button>
+          <span class="ap-label" id="ap-label"></span>
+          <span class="seed">seed 20260722 · deterministic</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ #live ═══════════ -->
+    <section class="route" id="route-live">
+      <span class="mode-badge live">⟦ LIVE ⟧ 당신의 웹캠 · 온디바이스 추론 — 프레임은 이 페이지를 떠나지 않습니다</span>
+
+      <div class="panel">
+        <div class="live-grid">
+          <div>
+            <div class="live-pane" id="live-pane">
+              <video id="live-video" autoplay playsinline muted></video>
+              <canvas id="live-canvas"></canvas>
+              <div id="live-hud"></div>
+            </div>
+            <div class="live-status" id="live-status" role="status">꺼짐 · OFF</div>
+            <div class="live-controls">
+              <button class="sc-btn ok" id="btn-live">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                내 카메라를 CAM-07로 연결</button>
+              <button class="sc-btn" id="btn-videofree" aria-pressed="false">영상 가림 · skeleton-only</button>
+              <button class="sc-btn" id="btn-replay">카메라 없음? 합성 REPLAY</button>
+            </div>
+            <div class="privacy-plate">
+              <b>영상무전송 원칙.</b> 모든 추론은 이 탭 안에서 실행됩니다(MoveNet MultiPose ·
+              논문에서 URFD로 검증한 것과 동일한 낙상 상태머신 · 배포 임계값 그대로).
+              네트워크로 나가는 것은 오른쪽 업링크 패널의 JSON 이벤트뿐입니다 — 픽셀은 없습니다.
+            </div>
+          </div>
+
+          <div class="steps" id="live-steps">
+            <div class="step"><b>01</b><p><strong>카메라 허용</strong> — 브라우저 권한 요청을 수락하세요. 약 5초.</p></div>
+            <div class="step"><b>02</b><p><strong>모델 로드</strong> — TF.js + MoveNet MultiPose Lightning(논문과 동일 모델)을 CDN에서 받아 초기화합니다. ~10초.</p></div>
+            <div class="step"><b>03</b><p><strong>전신이 보이게</strong> — 카메라에서 2 m 정도 떨어져 서세요. 여러 명도 동시 추적됩니다.</p></div>
+            <div class="step"><b>04</b><p><strong>상태머신 작동 확인</strong> — 천천히 바닥에 앉거나 누우면 warn → fall 전이를 볼 수 있습니다. 알림은 관제 트윈·에이전트 화면에도 동시에 전파됩니다.</p></div>
+            <div class="step"><b>SM</b><p class="mono" id="live-sm" style="font-size:11px">state=off · tilt −° · asp −</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ #agents ═══════════ -->
+    <section class="route" id="route-agents">
+      <span class="mode-badge design">⟦ DESIGN-STAGE PoC ⟧ 12-에이전트 하니스 — 논문 Table 2 기준 설계 단계, 미평가</span>
+
+      <div class="panel">
+        <h3>Sense → Judge → Act → Connect 오케스트레이션</h3>
+        <div class="agent-cols" id="agent-cols"></div>
+
+        <div class="ladder" role="group" aria-label="자율성 사다리">
+          <div class="rung" data-l="0">L0 관찰</div>
+          <div class="rung" data-l="1">L1 알림</div>
+          <div class="rung" data-l="2">L2 완화</div>
+          <div class="rung" data-l="3">L3 개입 <span class="mono">(human-veto)</span></div>
+        </div>
+
+        <div class="veto" id="veto">
+          <span class="vt-count mono" id="veto-count">10.0</span>
+          <p><strong>낙상 확정 — 119/e-Gen 연계 시퀀스(모의).</strong> 관리자 거부권(human veto) 카운트다운.
+            시간 내 응답이 없으면 모의 출동 요청이 발신됩니다. <em>실제 119에 연결되지 않습니다 — 설계 단계 시연.</em></p>
+          <button class="ack" id="veto-ack">중지 · VETO</button>
+        </div>
+
+        <h3 style="margin-top:16px">이벤트 트레이스</h3>
+        <div class="trace-log" id="trace-log"></div>
+        <p class="footnote">각 트레이스는 실제 버스 이벤트에서 생성됩니다(사전 녹화 아님). 신뢰도·융합 점수는 시뮬레이션 값이며, 하니스 자체는 논문에 명시된 대로 <b>설계 단계 개념증명(PoC)</b>입니다.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════ #events ═══════════ -->
+    <section class="route" id="route-events">
+      <span class="mode-badge sim">세션 데이터 — SIM·LIVE 공용 이벤트 버스 기록 (시뮬레이션+실기기 혼합)</span>
+
+      <div class="panel">
+        <h3>세션 이벤트 로그
+          <button class="sc-btn" id="btn-export" style="margin-left:auto">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            JSON 내보내기</button>
+        </h3>
+        <div class="ev-table-wrap">
+          <table class="ev-table" id="ev-table">
+            <thead><tr><th>시각</th><th>종류</th><th>심각도</th><th>대상</th><th>사이트</th><th>소스</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:18px">세션 디브리핑</h3>
+        <div class="debrief-grid" id="debrief"></div>
+        <p class="footnote">업링크 누적치는 스켈레톤·이벤트 JSON의 실제 바이트 수이며, 영상 등가치는 H.264 720p(≈2.5 Mbps) 기준 환산입니다 — 논문 §4.3의 "2–3 orders of magnitude" 주장에 해당하는 수치를 세션 데이터로 재현합니다.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════ #evidence ═══════════ -->
+    <section class="route" id="route-evidence">
+      <span class="mode-badge live">⟦ MEASURED ⟧ 논문에 보고된 측정 결과 — run_20260627_222419</span>
+
+      <div class="panel">
+        <h3>URFD 낙상 감지 — 배포 로직 그대로, 재튜닝 없음</h3>
+        <div class="evi-grid">
+          <div class="evi-card"><b class="big" style="color:var(--ok)">1.00</b><span class="cap">Recall — 낙상 8/8 전건 감지. <b>단, 8시퀀스 랩 부분집합 결과</b>이며 현장 성능의 상한 근거로만 해석(논문 §4.1 원문 주의사항).</span></div>
+          <div class="evi-card"><b class="big">0.84</b><span class="cap">F1 (precision 0.73) — 오탐 3건은 깊이 숙임·눕기 동작, 자세+무동작 상태머신의 예상된 혼동.</span></div>
+          <div class="evi-card"><b class="big">≈3.3 s</b><span class="cap">중앙값 감지 지연 (99.5프레임 @30fps) — 700 ms 확인지연 포함.</span></div>
+          <div class="evi-card"><b class="big">0.11 ms</b><span class="cap">프레임당 후처리(REBA+화재 픽셀스캔, Colab x86 vCPU) — 병목은 신경망 추론이지 SHine-K 로직이 아님.</span></div>
+          <div class="evi-card">
+            <span class="micro">Confusion (n=16)</span>
+            <div class="conf-mini">
+              <div style="background:var(--ok-bg);color:var(--ok)">TP 8</div>
+              <div style="background:var(--warn-bg);color:var(--warn)">FP 3</div>
+              <div style="background:var(--elev);color:var(--ink-3)">FN 0</div>
+              <div style="background:rgba(49,130,246,.1);color:var(--blue)">TN 5</div>
+            </div>
+          </div>
+          <div class="evi-card"><b class="big" style="color:var(--cyan)">×10²–10³</b><span class="cap">업링크 절감 — 근로자당 스켈레톤 수 kbps vs H.264 스트림. 지금 이 콘솔의 업링크 패널이 같은 메시지 스키마로 실측 재현 중.</span></div>
+        </div>
+
+        <h3 style="margin-top:18px">구현 단계 투명성 (논문 Table 2)</h3>
+        <div class="evi-grid">
+          <div class="evi-card"><span class="tag-measured">WORKING</span><span class="cap" style="margin-top:8px;display:block">브라우저 다인원 포즈(MoveNet) · 낙상/무동작 상태머신 · PPE(YOLOv11n ONNX) · 간이 REBA · 영상무전송 이벤트 전송 · 관제 트윈 재구성 · 화재 픽셀 분석</span></div>
+          <div class="evi-card"><span class="tag-poc">PoC</span><span class="cap" style="margin-top:8px;display:block">동의 기반 60초 브레이크글라스 영상 · 웨어러블 심박 페어링(Web Bluetooth)</span></div>
+          <div class="evi-card"><span class="tag-design">DESIGN TARGET</span><span class="cap" style="margin-top:8px;display:block">119/e-Gen 실연계 · 레이더/열화상 · 12-에이전트 하니스 · 모든 비즈니스 지표(정확도/ROI/재해감소) — <b>결과 아님, 현장 파일럿 전 설계 목표</b></span></div>
+        </div>
+
+        <h3 style="margin-top:18px">논문 그림 (Figures 1–4)</h3>
+        <div class="fig-thumbs">
+          <a href="index.html#arch"><img src="img/Figure1.png" alt="Figure 1 아키텍처" loading="lazy" /><span>Fig.1 아키텍처</span></a>
+          <a href="index.html#arch"><img src="img/Figure2.png" alt="Figure 2 영상무전송 데이터플로우" loading="lazy" /><span>Fig.2 데이터플로우</span></a>
+          <a href="index.html#arch"><img src="img/Figure3.png" alt="Figure 3 작동 워크플로우" loading="lazy" /><span>Fig.3 워크플로우</span></a>
+          <a href="index.html#results"><img src="img/Figure4.png" alt="Figure 4 URFD 혼동행렬" loading="lazy" /><span>Fig.4 혼동행렬</span></a>
+        </div>
+
+        <p class="footnote">전체 근거·그림·참고문헌은 <a href="index.html#results">논문 소개 페이지</a> ·
+          재현 코드는 <a href="https://github.com/y3korea/SHine-K-" target="_blank" rel="noopener">GitHub y3korea/SHine-K-</a> ·
+          라이브 빌드는 <a href="https://profound-pastelito-feec33.netlify.app/" target="_blank" rel="noopener">기존 데모</a> 참조.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════ persistent rail ═══════════ -->
+  <aside class="rail">
+    <div class="panel">
+      <h3>실시간 KPI <span class="badge warn">SIM 합성</span></h3>
+      <div class="kpi-grid">
+        <div class="kpi"><b id="k-sites">3</b><span>사이트 SITES</span></div>
+        <div class="kpi"><b id="k-workers">19</b><span>근로자 TRACKED</span></div>
+        <div class="kpi ok"><b id="k-uplink">—</b><span>업링크 kbps</span></div>
+        <div class="kpi crit"><b id="k-crit">0</b><span>심각 CRIT</span></div>
+        <div class="kpi warn"><b id="k-warn">0</b><span>경고 WARN</span></div>
+        <div class="kpi"><b id="k-wbgt">26.4°C</b><span>WBGT</span></div>
+      </div>
+    </div>
+
+    <div class="panel wcard" id="wcard">
+      <div class="wc-head"><span class="wc-id mono">—</span><span class="wc-zone">—</span><span class="wc-state" style="margin-left:auto"></span></div>
+      <div class="wc-metrics">
+        <div class="wc-m"><b class="wc-hr">—</b><span>심박 BPM (웨어러블·모의)</span></div>
+        <div class="wc-m"><b class="wc-reba">—</b><span>REBA (간이)</span></div>
+        <div class="wc-m"><b class="wc-load">—</b><span>피로 부하 (과로)</span></div>
+        <div class="wc-m"><b class="wc-worked">—</b><span>연속 근무</span></div>
+      </div>
+      <div class="wc-sm mono">—</div>
+    </div>
+
+    <div class="panel">
+      <h3>알림 피드 <span class="badge info">SIM+LIVE 공용 버스</span></h3>
+      <div class="feed" id="feed" aria-live="polite"></div>
+    </div>
+
+    <div class="panel">
+      <h3>이벤트 업링크 — 센터로 전송되는 전부</h3>
+      <div class="uplink" id="uplink"></div>
+      <div class="up-stats" id="up-stats"></div>
+      <p class="up-note">픽셀·영상·원시 생체신호는 이 목록에 등장하지 않습니다. 이것이 논문의 핵심 주장입니다.</p>
+    </div>
+  </aside>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/shinek-core.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/live.js"></script>
+<script src="js/console.js"></script>
+</body>
+</html>

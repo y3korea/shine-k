@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SHine-K 현장 엣지 노드 — 기업 화면</title>
+<meta name="description" content="사업장 엣지 노드 프로토타입: 브라우저 카메라 AI로 작업자세(REBA)·낙상을 점검하고(과로 지표는 웨어러블 모의 데이터), 관제센터로 이벤트만 전송" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233182F6'/%3E%3Ccircle cx='16' cy='9' r='3' fill='white'/%3E%3Cpath d='M16 12v8M16 14l-5 4M16 14l5 4M16 20l-4 7M16 20l4 7' stroke='white' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.19/index.min.css" />
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/console.css" />
+<style>
+  .org-pill { font-size: 12.5px; font-weight: 800; color: var(--blue); background: rgba(49,130,246,.1); border-radius: 999px; padding: 5px 13px; }
+  .roster-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .roster-table th { text-align: left; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); padding: 6px 8px; border-bottom: 1px solid var(--hairline); }
+  .roster-table td { padding: 6px 8px; border-bottom: 1px solid rgba(148,163,184,.07); font-family: var(--font-mono); }
+  .loadbar { width: 64px; height: 8px; border-radius: 4px; background: rgba(148,163,184,.15); position: relative; overflow: hidden; display: inline-block; vertical-align: middle; }
+  .loadbar i { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+  .rx-card { display: none; margin-top: 12px; border: 1px solid rgba(22,198,140,.35); background: rgba(22,198,140,.06); border-radius: 12px; padding: 14px; }
+  .rx-card.open { display: flex; gap: 14px; align-items: center; animation: fadeUp .3s var(--ease); }
+  .rx-card img { width: 92px; border-radius: 10px; }
+  .rx-card h4 { font-size: 14px; font-weight: 800; color: var(--ok); margin-bottom: 4px; }
+  .rx-card p { font-size: 12.5px; color: var(--ink-2); line-height: 1.6; }
+  .rx-card .done { margin-left: auto; border: 1px solid var(--ok); color: var(--ok); background: transparent; border-radius: 9px; padding: 8px 14px; font-weight: 800; }
+  .sensor-card { display: flex; gap: 10px; align-items: flex-start; background: var(--elev); border: 1px solid var(--hairline); border-radius: 10px; padding: 11px 13px; margin-bottom: 8px; }
+  .sensor-card p { font-size: 12px; color: var(--ink-2); line-height: 1.55; }
+  .sensor-card b { font-size: 12.5px; color: var(--ink-1); display: block; }
+</style>
+</head>
+<body class="theme-dark">
+
+<div id="sr-announce" class="sr-only" role="alert" aria-live="assertive"></div>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#3182F6"/><circle cx="16" cy="9" r="3" fill="#fff"/><path d="M16 12v8M16 14l-5 4M16 14l5 4M16 20l-4 7M16 20l4 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+    <span>SHine-K <small>WORKSITE EDGE</small></span>
+  </a>
+  <span class="org-pill" id="org-name">사업장</span>
+  <span class="spacer"></span>
+  <span class="clock mono" id="clock">--:--:--</span>
+  <span class="pill-online"><i></i>센터 연결(데모) · EVENT-ONLY</span>
+  <a class="paper-link" href="console.html">관제센터 화면 ↗</a>
+  <a class="paper-link" href="#" id="btn-logout">로그아웃</a>
+</header>
+
+<div class="shell">
+  <main class="stage">
+    <section class="route active">
+      <span class="mode-badge live">⟦ EDGE NODE ⟧ 이 브라우저가 현장 AI입니다 — 영상·생체신호는 사업장 밖으로 나가지 않습니다</span>
+
+      <div class="panel">
+        <h3>현장 카메라 CAM-01 — 작업자세(REBA) · 낙상 · 무동작 점검</h3>
+        <div class="live-grid">
+          <div>
+            <div class="live-pane" id="live-pane">
+              <video id="live-video" autoplay playsinline muted></video>
+              <canvas id="live-canvas"></canvas>
+              <div id="live-hud"></div>
+            </div>
+            <div class="live-status" id="live-status" role="status">꺼짐 · OFF</div>
+            <div class="live-controls">
+              <button class="sc-btn ok" id="btn-live">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                현장 카메라 시작</button>
+              <button class="sc-btn" id="btn-videofree" aria-pressed="false">영상 가림 · skeleton-only</button>
+              <button class="sc-btn" id="btn-replay">카메라 없음? 합성 REPLAY</button>
+            </div>
+            <div class="privacy-plate">
+              <b>근로자 동의 거버넌스.</b> 항목별 옵트인·가명 ID·목적 제한(안전)·기기 내 처리가 기본값입니다.
+              관제센터의 영상 열람은 동의 기반 브레이크글라스(60초 자동차단·전건 감사기록)로만 가능합니다 — 논문 §3.4.
+            </div>
+            <div class="rx-card" id="rx-card">
+              <img id="rx-img" src="img/recovery/stretch.gif" alt="스트레칭 안내 동작" />
+              <div>
+                <h4 id="rx-title">휴식·스트레칭 처방 (Act 루프)</h4>
+                <p id="rx-body">고위험 자세가 지속되었습니다. 90초 목·어깨 스트레칭 후 재측정하세요.</p>
+              </div>
+              <button class="done" id="rx-done">완료 확인</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="panel" style="padding:12px; margin-bottom:10px">
+              <h3>오늘의 현장</h3>
+              <div class="kpi-grid" style="grid-template-columns:repeat(2,1fr)">
+                <div class="kpi"><b id="k-onsite">6</b><span>근무 인원</span></div>
+                <div class="kpi warn"><b id="k-events">0</b><span>오늘 이벤트</span></div>
+                <div class="kpi ok"><b id="k-uplink">0.0</b><span>업링크 kbps</span></div>
+                <div class="kpi"><b id="k-reba">—</b><span>현재 REBA</span></div>
+              </div>
+            </div>
+
+            <div class="panel" style="padding:12px; margin-bottom:10px">
+              <h3>안전 포인트 → 지역화폐 <span class="tag-design">DESIGN</span></h3>
+              <div class="kpi-grid" style="grid-template-columns:repeat(2,1fr)">
+                <div class="kpi"><b id="k-points">0</b><span>오늘 적립 포인트</span></div>
+                <div class="kpi ok"><b id="k-coin">0원</b><span>지역화폐 전환 예정</span></div>
+              </div>
+              <p class="up-note" style="margin-top:8px">
+                스트레칭·휴식 완료, 대피 점호 응답 같은 <b>안전 행동에만</b> 적립됩니다 —
+                데이터 제공량과는 무관하며, 참여를 중단해도 불이익이 없습니다(비강요 원칙, 논문 T8).
+                지역사랑상품권 전환은 지자체 연계가 필요한 <b>설계 목표</b>로, 적립액이 구미·칠곡의
+                영세 상권에서 쓰이는 지역 환류 모델입니다.</p>
+            </div>
+
+            <div class="panel" style="padding:12px">
+              <h3>멀티모달 센싱 로드맵</h3>
+              <div class="sensor-card">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16C68C" stroke-width="1.9" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                <p><b>카메라 엣지 AI <span class="tag-measured">WORKING</span></b>다인원 포즈·낙상·PPE·화재 픽셀 — 지금 이 페이지에서 실행.</p>
+              </div>
+              <div class="sensor-card">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.9" aria-hidden="true"><path d="M4 12a8 8 0 0116 0M8 12a4 4 0 018 0M12 12h.01"/></svg>
+                <p><b>웨어러블 심박·피로 <span class="tag-poc">PoC</span></b>Web Bluetooth 페어링 — 과로 지수의 생체 입력(현재 모의값).</p>
+              </div>
+              <div class="sensor-card">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.9" aria-hidden="true"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>
+                <p><b>레이더(mmWave)·열화상 <span class="tag-design">DESIGN</span></b>비접촉 움직임·체온 — 논문 Table 2 기준 설계 단계.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:12px">
+        <h3>근로자 로스터 — 자세·심박·과로 누적 <span class="badge warn">웨어러블 모의 데이터</span></h3>
+        <div class="ev-table-wrap">
+          <table class="roster-table" id="roster">
+            <thead><tr><th>ID</th><th>구역</th><th>심박</th><th>REBA</th><th>연속근무</th><th>피로 부하</th><th>상태</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="rail">
+    <div class="panel">
+      <h3>현장 알림</h3>
+      <div class="feed" id="feed" aria-live="polite"></div>
+    </div>
+    <div class="panel">
+      <h3>센터로 전송(데모) — 이벤트 업링크</h3>
+      <div class="uplink" id="uplink"></div>
+      <div class="up-stats" id="up-stats"></div>
+      <p class="up-note">이 목록이 사업장에서 나가는 데이터의 전부입니다. 픽셀·원시 생체신호 없음 — 논문 §3.1.</p>
+    </div>
+  </aside>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/shinek-core.js"></script>
+<script src="js/worksite.js"></script>
+<script src="js/live.js"></script>
+<script>
+  document.getElementById('btn-live').addEventListener('click', function () { SHLive.start(); });
+  document.getElementById('btn-replay').addEventListener('click', function () {
+    if (SHLive.state.mode === 'replay') { SHLive.stop(); return; }
+    if (SHLive.state.mode === 'live') SHLive.stop();
+    SHLive.state.cv = document.getElementById('live-canvas');
+    SHLive.state.ctx = SHLive.state.cv.getContext('2d');
+    SHLive.state.video = document.getElementById('live-video');
+    SHLive.startReplay();
+  });
+  document.getElementById('btn-videofree').addEventListener('click', function () {
+    var pane = document.getElementById('live-pane');
+    var on = !pane.classList.contains('videofree');
+    pane.classList.toggle('videofree', on);
+    this.classList.toggle('toggled', on);
+    this.setAttribute('aria-pressed', String(on));
+  });
+  document.getElementById('btn-logout').addEventListener('click', function (e) { e.preventDefault(); SHAuth.logout(); });
+</script>
+</body>
+</html>

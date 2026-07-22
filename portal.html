@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SHine-K 포털 — 기업 · 관제센터 로그인 (데모)</title>
+<meta name="description" content="SHine-K 서비스 포털 프로토타입: 기업(사업장) 로그인과 경운대 관제센터 로그인 — 데모 세션, 실제 인증 없음" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233182F6'/%3E%3Ccircle cx='16' cy='9' r='3' fill='white'/%3E%3Cpath d='M16 12v8M16 14l-5 4M16 14l5 4M16 20l-4 7M16 20l4 7' stroke='white' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.19/index.min.css" />
+<link rel="stylesheet" href="css/tokens.css" />
+<style>
+body.theme-dark {
+  background:
+    radial-gradient(900px 460px at 70% -8%, rgba(49,130,246,.14), transparent 60%),
+    radial-gradient(700px 400px at 10% 108%, rgba(139,92,246,.1), transparent 60%),
+    var(--bg);
+  min-height: 100vh; display: flex; flex-direction: column;
+}
+.p-top { display: flex; align-items: center; gap: 10px; padding: 18px 26px; }
+.p-top .brand { display: flex; align-items: center; gap: 9px; font-weight: 800; color: var(--ink-1); }
+.p-top small { color: var(--ink-3); font-weight: 600; font-size: 11px; letter-spacing: .1em; }
+.p-top .spacer { flex: 1; }
+.p-top a { color: var(--ink-2); font-size: 13px; font-weight: 700; margin-left: 16px; white-space: nowrap; }
+.p-top a:hover { color: var(--blue); }
+
+.p-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 30px 20px 60px; }
+.p-box { width: min(880px, 100%); }
+.p-box h1 { font-size: clamp(24px, 3.4vw, 34px); font-weight: 800; letter-spacing: -.02em; text-align: center; }
+.p-box .sub { text-align: center; color: var(--ink-2); margin-top: 8px; font-size: 14.5px; }
+.demo-note {
+  margin: 18px auto 0; max-width: 620px; text-align: center;
+  font-size: 12.5px; color: var(--warn); background: var(--warn-bg);
+  border: 1px solid rgba(245,158,11,.3); border-radius: 10px; padding: 10px 16px; line-height: 1.6;
+}
+.roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 30px; }
+.role {
+  background: var(--card); border: 1px solid var(--hairline); border-radius: 18px; padding: 28px;
+  display: flex; flex-direction: column; gap: 12px; transition: all .2s var(--ease);
+}
+.role:hover { transform: translateY(-3px); border-color: rgba(49,130,246,.4); }
+.role .icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.role.ent .icon { background: rgba(49,130,246,.12); }
+.role.cc .icon { background: rgba(139,92,246,.12); }
+.role h2 { font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+.role p { font-size: 13px; color: var(--ink-2); line-height: 1.65; flex: 1; }
+.role label { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--ink-3); text-transform: uppercase; }
+.role select, .role input {
+  width: 100%; background: var(--elev); border: 1px solid var(--hairline); color: var(--ink-1);
+  border-radius: 10px; padding: 11px 13px; font-size: 14px; font-family: inherit;
+}
+.role .go {
+  border: 0; border-radius: 11px; padding: 13px; font-size: 14.5px; font-weight: 800; color: #fff;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform .15s var(--ease);
+}
+.role .go:hover { transform: translateY(-1px); }
+.role.ent .go { background: var(--blue); }
+.role.cc .go { background: var(--purple); }
+.role .hint { font-size: 11px; color: var(--ink-4); }
+.p-foot { text-align: center; font-size: 11.5px; color: var(--ink-4); padding: 0 20px 30px; line-height: 1.7; }
+.p-foot a { color: var(--ink-3); }
+</style>
+</head>
+<body class="theme-dark">
+
+<header class="p-top">
+  <a class="brand" href="index.html">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#3182F6"/><circle cx="16" cy="9" r="3" fill="#fff"/><path d="M16 12v8M16 14l-5 4M16 14l5 4M16 20l-4 7M16 20l4 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+    <span>SHine-K <small>PORTAL</small></span>
+  </a>
+  <span class="spacer"></span>
+  <a href="index.html">논문 소개</a>
+  <a href="console.html">시뮬레이션 데모</a>
+</header>
+
+<main class="p-main">
+  <div class="p-box">
+    <h1>서비스 포털 — 프로토타입</h1>
+    <p class="sub">역할을 선택해 입장하세요 — 사업장(엣지 노드)과 관제센터(컨트롤 트윈)는 이벤트만 주고받습니다.</p>
+    <p class="demo-note"><b>데모 포털 안내.</b> 이 페이지는 정적 프로토타입으로 <b>실제 인증이 없으며 비밀번호를 요구하지 않습니다.</b>
+      어떤 비밀번호도 입력하지 마세요. 선택한 역할·기관명은 화면 구성용으로만 이 브라우저(localStorage)에 저장됩니다.</p>
+
+    <div class="roles">
+      <div class="role ent">
+        <div class="icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3182F6" stroke-width="1.9" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M9 17h1M14 9h1M14 13h1M14 17h1"/></svg>
+        </div>
+        <h2>기업 로그인 <span class="mono" style="font-size:11px;color:var(--ink-3)">WORKSITE EDGE</span></h2>
+        <p>사업장 현장 화면으로 입장합니다. 현장 카메라(웹캠)가 브라우저 안에서 엣지 AI로 작동하며
+          작업자세(REBA)·낙상을 점검하고(과로 지표는 웨어러블 모의 데이터로 시연), 관제센터로는 <b>이벤트만</b> 전송합니다.</p>
+        <label for="ent-org">사업장 선택</label>
+        <select id="ent-org">
+          <option>데모 제조 A · 구미 프레스</option>
+          <option>데모 제조 B · 구미 용접</option>
+          <option>데모 협력사 C · 칠곡 조립</option>
+        </select>
+        <button class="go" id="go-ent">
+          현장 엣지 노드 입장
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <span class="hint">웹캠 권한을 허용하면 실제 온디바이스 추론이 실행됩니다(선택).</span>
+      </div>
+
+      <div class="role cc">
+        <div class="icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.9" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4M6 8l3 3 3-4 3 3 3-2"/></svg>
+        </div>
+        <h2>관제센터 로그인 <span class="mono" style="font-size:11px;color:var(--ink-3)">CONTROL TWIN</span></h2>
+        <p>경운대학교 근로자안전센터 관제 화면으로 입장합니다. 여러 사업장의 비식별 스켈레톤·이벤트를
+          수신해 디지털 트윈으로 재구성합니다 — <b>영상은 수신하지 않습니다.</b></p>
+        <label for="cc-org">기관</label>
+        <select id="cc-org">
+          <option>경운대학교 근로자안전센터</option>
+          <option>경상북도 RISE 관제 데모</option>
+        </select>
+        <button class="go" id="go-cc">
+          관제센터 입장
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <span class="hint">시뮬레이션 트윈 + 실제 엣지(LIVE) 이벤트를 한 화면에서 관제합니다.</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="p-foot">
+  SHine-K — Sensors (MDPI) 투고 논문의 실행 가능한 프로토타입 · 경운대학교 · 경상북도 RISE ·
+  <a href="https://github.com/y3korea/SHine-K-" target="_blank" rel="noopener">GitHub</a>
+</footer>
+
+<script src="js/auth.js"></script>
+<script>
+  document.getElementById('go-ent').addEventListener('click', function () {
+    SHAuth.login('enterprise', document.getElementById('ent-org').value);
+    location.href = 'worksite.html';
+  });
+  document.getElementById('go-cc').addEventListener('click', function () {
+    SHAuth.login('center', document.getElementById('cc-org').value);
+    location.href = 'console.html';
+  });
+</script>
+</body>
+</html>

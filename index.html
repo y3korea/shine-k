@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SHine-K — 브라우저가 곧 엣지 AI · 영상무전송 중소제조 안전관제 플랫폼</title>
+<meta name="description" content="SHine-K: 설치 없는 브라우저 엣지 AI로 영상 없이 다중 사업장을 관제하는 근로자 안전·건강 플랫폼. Sensors (MDPI) 투고 논문 공식 사이트 — URFD 낙상 감지 recall 1.00 · F1 0.84." />
+<meta property="og:title" content="SHine-K — Edge-AI, Video-Free Worker Safety Platform" />
+<meta property="og:description" content="The browser is the edge node. Video-free, zero-install worker safety monitoring for SME manufacturing — with a live simulation twin and a real in-browser demo." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233182F6'/%3E%3Ccircle cx='16' cy='9' r='3' fill='white'/%3E%3Cpath d='M16 12v8M16 14l-5 4M16 14l5 4M16 20l-4 7M16 20l4 7' stroke='white' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.19/index.min.css" />
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/landing.css" />
+<noscript><style>.reveal{opacity:1 !important;transform:none !important}</style></noscript>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="#top">
+    <svg width="27" height="27" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#3182F6"/><circle cx="16" cy="9" r="3" fill="#fff"/><path d="M16 12v8M16 14l-5 4M16 14l5 4M16 20l-4 7M16 20l4 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+    SHine-K
+  </a>
+  <div class="nav-links">
+    <a href="#problem" data-en="Problem">문제</a>
+    <a href="#arch" data-en="Architecture">아키텍처</a>
+    <a href="#results" data-en="Results">결과</a>
+    <a href="#status" data-en="Transparency">투명성</a>
+    <a href="#patents" data-en="Patents">특허</a>
+    <a href="#privacy" data-en="Privacy">프라이버시</a>
+    <a href="#team" data-en="Team">팀</a>
+  </div>
+  <span class="spacer"></span>
+  <div class="lang-pill" role="group" aria-label="언어 선택">
+    <button id="lang-ko" class="on">KO</button>
+    <button id="lang-en">EN</button>
+  </div>
+  <a class="cta-console" href="portal.html" data-en="Portal">포털 로그인</a>
+  <a class="cta-console" style="background:var(--ink-1)" href="console.html" data-en="Open Console">관제 콘솔 열기</a>
+</nav>
+
+<!-- ═══════════ S1 HERO ═══════════ -->
+<header class="hero" id="top">
+  <div class="hero-panel">
+    <div class="hero-grid">
+      <div>
+        <span class="hero-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4ADE9E" stroke-width="2.4" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          Sensors (MDPI) 투고 · KSCI 2026 발표 확장 · 경상북도 RISE
+        </span>
+        <h1 data-en="The browser <em>is</em> the edge AI.<br>Safety monitoring without video.">브라우저가 곧 <em>엣지 AI</em>입니다.<br>영상 없이 안전을 관제합니다.</h1>
+        <p class="sub" data-en="SHine-K is an install-free web platform for SME manufacturing: every shop-floor browser runs pose, fall, PPE and fire analysis locally, and only de-identified skeletons and risk events — never pixels — reach the central control twin. Fatigue tracking joins via wearables (PoC).">
+          SHine-K는 설치가 필요 없는 중소제조 안전·건강 플랫폼입니다. 현장 브라우저가 직접
+          자세·낙상·PPE·화재를 분석하고, 중앙 관제 트윈에는 비식별 스켈레톤과 위험 이벤트만 —
+          픽셀은 단 하나도 — 전송합니다.
+        </p>
+        <div class="hero-stats">
+          <div class="hstat ok"><b data-count="1.00" data-dec="2">1.00</b><span>URFD RECALL (8/8 낙상)</span></div>
+          <div class="hstat"><b data-count="0.84" data-dec="2">0.84</b><span>F1 SCORE</span></div>
+          <div class="hstat"><b>≈3.3<small>s</small></b><span>중앙값 감지 지연</span></div>
+          <div class="hstat"><b>0.11<small>ms</small></b><span>후처리/프레임</span></div>
+          <div class="hstat"><b>×10²⁻³</b><span>업링크 절감 vs 영상</span></div>
+        </div>
+        <div class="hero-ctas">
+          <a class="btn-primary" href="console.html" data-en="Launch Control Twin (Simulation)">관제 트윈 열기 (시뮬레이션)</a>
+          <a class="btn-ghost" href="console.html#live" data-en="Try Live Edge (Your Webcam)">라이브 엣지 체험 (내 웹캠)</a>
+          <a class="btn-ghost" href="portal.html" data-en="Service Portal (Prototype)">서비스 포털 (프로토타입)</a>
+        </div>
+        <p class="hero-run">run_20260627_222419 · thresholds unchanged from deployment · seed 20260722</p>
+      </div>
+      <div class="hero-vis">
+        <span class="tag">CONTROL TWIN — EVENT-ONLY UPLINK</span>
+        <canvas id="hero-canvas" width="430" height="360" aria-label="스켈레톤 낙상 감지 애니메이션"></canvas>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ S2 PROBLEM ═══════════ -->
+<section class="block" id="problem">
+  <div class="wrap">
+    <span class="eyebrow" data-en="THE PROBLEM · KOREA 2023">문제 · 대한민국 2023</span>
+    <h2 class="sec-title reveal" data-en="Injuries concentrate exactly where monitoring cannot reach.">재해는 모니터링이 닿지 못하는 곳에 집중됩니다.</h2>
+    <p class="sec-sub reveal" data-en="Small workplaces cannot afford safety staff, servers, or camera infrastructure — yet they carry most of the risk. The bottleneck is not the algorithm; it is deployment.">
+      소규모 사업장은 안전 인력도, 서버도, 카메라 인프라도 감당할 수 없습니다 — 그런데 위험은 그곳에 몰려 있습니다.
+      병목은 알고리즘이 아니라 <b>배포</b>입니다.
+    </p>
+    <div class="stat-grid">
+      <div class="stat-card reveal"><b data-count="68413">68,413</b><span data-en="occupational injuries & illnesses in 2023 — a 10-year high">2023년 산업재해자 수 — 10년 내 최고치</span><span class="src">Korea Herald · MOEL [1]</span></div>
+      <div class="stat-card reveal"><b data-count="32967">32,967</b><span data-en="of them in manufacturing — the highest of any sector">그중 제조업 — 전 업종 최다</span><span class="src">MOEL 2023 [1]</span></div>
+      <div class="stat-card reveal"><b>77<small>%</small></b><span data-en="of injuries occur in small workplaces (98% of establishments, 80.9% of fatal accidents)">의 재해가 소규모 사업장에서 발생 (사업장의 98%, 사망사고의 80.9%)</span><span class="src">[1]</span></div>
+      <div class="stat-card reveal"><b>≈38<small>조 원</small></b><span data-en="estimated annual social cost of occupational accidents">산업재해 연간 사회적 손실 추정</span><span class="src">[1]</span></div>
+    </div>
+    <div class="coverage-bar reveal">
+      <div class="cbar-label"><span data-en="Occupational-health service coverage — Korea">직업건강 서비스 커버리지 — 한국</span><b class="mono">25–40%</b></div>
+      <div class="cbar"><i style="width:33%;background:linear-gradient(90deg,var(--danger),var(--warn))"></i></div>
+      <div class="cbar-label" style="margin-top:14px"><span data-en="Advanced economies">선진국</span><b class="mono">70–80%</b></div>
+      <div class="cbar"><i style="width:75%;background:linear-gradient(90deg,var(--blue),var(--cyan))"></i></div>
+      <p style="font-size:12px;color:var(--ink-3);margin-top:10px">Kong et al., Ewha Med. J. 2025 [3]</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ S3 REGULATION ═══════════ -->
+<section class="block" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow" data-en="REGULATORY TIMING">규제 환경 — 왜 지금인가</span>
+    <h2 class="sec-title reveal" data-en="The law now demands what small firms cannot build alone.">법은 이미, 소기업이 혼자 만들 수 없는 것을 요구합니다.</h2>
+    <div class="timeline">
+      <div class="tl-card reveal"><time>2024-01-27</time><h4 data-en="Serious Accidents Punishment Act → 5–49 employees">중대재해처벌법 5–49인 사업장 확대</h4><p data-en="Criminal liability now reaches the small firms least equipped to install camera-server safety systems.">카메라-서버형 안전시스템을 갖출 여력이 가장 없는 소기업까지 형사책임이 확대되었습니다.</p></div>
+      <div class="tl-card reveal"><time>2025-02-02</time><h4 data-en="EU AI Act — workplace emotion recognition banned">EU AI Act — 작업장 감정인식 금지</h4><p data-en="Biometric surveillance is being drawn down worldwide. Systems must read safety states, not identity or affect.">생체 감시는 전 세계적으로 규제 대상입니다. 시스템은 신원·감정이 아니라 <b>물리적 안전 상태</b>만 읽어야 합니다.</p></div>
+      <div class="tl-card reveal"><time>2026-01-22</time><h4 data-en="Korea AI Basic Act in force">대한민국 AI 기본법 시행</h4><p data-en="High-impact AI duties raise the bar for video- and biometric-based monitoring.">고영향 AI 의무가 영상·생체 기반 모니터링의 기준선을 끌어올립니다.</p></div>
+    </div>
+    <div class="callout reveal" data-en="SHine-K is designed precisely for this gap: install-free, video-free, consent-first — it reads physical safety states such as posture, falls and PPE, never identity or emotion.">
+      SHine-K는 정확히 이 틈을 위해 설계되었습니다: 무설치·영상무전송·동의 우선 —
+      자세·낙상·PPE 같은 물리적 안전 상태만 읽을 뿐, 신원·감정은 읽지 않습니다.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ S4 ARCHITECTURE ═══════════ -->
+<section class="block" id="arch" style="background:#fff;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline)">
+  <div class="wrap">
+    <span class="eyebrow">EDGE-TO-CONTROL 아키텍처</span>
+    <h2 class="sec-title reveal" data-en="Sense → Judge → Act → Connect. Pixels stay on-site.">Sense → Judge → Act → Connect. 픽셀은 현장에 남습니다.</h2>
+    <p class="sec-sub reveal" data-en="On each shop floor the browser is the AI edge node. The central twin subscribes to events and reconstructs each worker's posture by interpolating received skeletons — it never receives video.">
+      각 현장에서 브라우저가 AI 엣지 노드입니다. 중앙 트윈은 이벤트를 구독해 수신된 스켈레톤을 보간하여
+      근로자의 자세를 재구성합니다 — 영상은 결코 수신하지 않습니다.
+    </p>
+
+    <div class="arch-grid">
+      <div class="arch-col reveal"><h4 style="color:var(--blue)">SENSE · 감지</h4><div class="kr" data-en="In-browser multi-person sensing">브라우저 다인원 감지</div>
+        <ul><li>MoveNet MultiPose 스켈레톤 <b>(구현)</b></li><li>PPE — YOLOv11n ONNX <b>(구현)</b></li><li>화재 픽셀 분석 <b>(구현)</b></li><li>웨어러블 심박 <b>(PoC)</b> · 레이더/열화상 <b>(설계)</b></li></ul></div>
+      <div class="arch-col reveal"><h4 style="color:var(--purple)">JUDGE · 판단</h4><div class="kr" data-en="Deployed state machines">배포된 상태머신</div>
+        <ul><li>낙상/무동작 FSM — URFD 검증 <b>(구현)</b></li><li>간이 REBA 자세위험 <b>(구현)</b></li><li>과로 누적부하 지수 <b>(모의)</b></li><li>12-에이전트 하니스 <b>(설계 PoC)</b></li></ul></div>
+      <div class="arch-col reveal"><h4 style="color:var(--ok)">ACT · 조치</h4><div class="kr" data-en="Closed feedback loop">닫힌 피드백 루프</div>
+        <ul><li>휴식·스트레칭 처방 → 완료 확인</li><li>재측정으로 회복 검증</li><li>작업 조정·순환 권고</li><li>모니터링을 회복 촉진으로 전환</li></ul></div>
+      <div class="arch-col reveal"><h4 style="color:var(--cyan)">CONNECT · 연계</h4><div class="kr" data-en="Center & emergency">센터·응급 연계</div>
+        <ul><li>관제 트윈 스켈레톤 재구성 <b>(구현)</b></li><li>브레이크글라스 60초 영상 <b>(PoC)</b></li><li>119/e-Gen 자동연계 <b>(설계)</b></li><li>대피 점호 <b>(설계)</b></li></ul></div>
+    </div>
+
+    <div class="json-pair">
+      <div class="json-card reveal">{"<span class="k">type</span>":"pose","<span class="k">id</span>":"GA-03","<span class="k">kp</span>":[…17×{x,y,score}]}
+        <span class="cap" data-en="A skeleton message — a few hundred bytes, ~8 Hz per worker.">스켈레톤 메시지 — 근로자당 약 8 Hz, 수백 바이트.</span></div>
+      <div class="json-card reveal">{"<span class="k">type</span>":"alert","<span class="k">kind</span>":"fall","<span class="k">site</span>":"GM-A"}
+        <span class="cap" data-en="A risk event. These two shapes are the only things that ever leave the device.">위험 이벤트. 기기를 떠나는 데이터는 이 두 형태가 전부입니다.</span></div>
+    </div>
+
+    <div class="chips reveal">
+      <span class="chip hl">BroadcastChannel · 동일 PC</span>
+      <span class="chip hl">LAN WebSocket · 오프라인 공장</span>
+      <span class="chip hl">퍼블릭 브로커 · 광역 다중사이트</span>
+      <span class="chip" data-en="Same schema — transport swaps with zero code change">전송계층 교체에도 스키마 동일 · 코드 무변경</span>
+    </div>
+    <div class="chips reveal">
+      <span class="chip">6종 이벤트 분류:</span>
+      <span class="chip">낙상</span><span class="chip">무동작</span><span class="chip">PPE 위반</span>
+      <span class="chip">구역 침입</span><span class="chip">이상 자세</span><span class="chip">건강(심박·과로)</span>
+    </div>
+
+    <figure class="arch-fig reveal">
+      <img src="img/Figure1.png" alt="SHine-K 아키텍처: Sense-Judge-Act-Connect 파이프라인과 피드백 루프" loading="lazy" />
+      <figcaption>Figure 1 — Sense→Judge→Act→Connect 파이프라인과 피드백 루프 (논문 원본 그림)</figcaption>
+    </figure>
+    <figure class="arch-fig reveal">
+      <img src="img/Figure2.png" alt="엣지-프라이버시 데이터플로우: 영상은 현장에 남고 17개 스켈레톤 좌표와 이벤트만 센터로 전송" loading="lazy" />
+      <figcaption>Figure 2 — 영상무전송 경계: 현장(엣지)과 관제센터 사이를 넘는 것은 비식별 스켈레톤·이벤트뿐. 점선 = 설계 목표, 실선 = 구현·검증 (논문 원본 그림)</figcaption>
+    </figure>
+    <figure class="arch-fig tall reveal">
+      <img src="img/Figure3.png" alt="작동 워크플로우: 급성 위험은 즉시 경보·출동, 누적 위험은 개인화 회복 코칭과 재측정의 닫힌 피드백 루프" loading="lazy" />
+      <figcaption data-en="Figure 3 — Operational workflow: acute hazards branch to immediate alerting (design-target dispatch), cumulative hazards to personalized recovery coaching with re-measurement — the closed feedback loop this site's Act-loop prescriptions demonstrate live.">
+        Figure 3 — 작동 워크플로우: 급성 위험은 즉시 경보(출동 연계는 설계 목표), 누적 위험은 개인화 회복 코칭 → 재측정의
+        닫힌 피드백 루프로 분기 — 이 사이트의 <a href="worksite.html">현장 엣지 노드</a> 휴식 처방이 이 루프를 실동작으로 시연합니다 (논문 원본 그림)</figcaption>
+    </figure>
+    <figure class="arch-fig reveal">
+      <img src="img/fig_web_composition.png" alt="논문의 웹 구성 7개 모듈: 랜딩, 현장 엣지 AI, 관제센터, 근로자 앱, AI 자세측정, 현장 카메라, 논문" loading="lazy" />
+      <figcaption data-en="Web composition (paper §3.2) mapped to this site: (2) Worksite Edge-AI → worksite.html · (3) Control Center → console.html#twin · (5) REBA → console.html#live · every module is a page you can open right now.">
+        논문 §3.2의 웹 구성 — 이 사이트와의 대응: (2) Worksite Edge-AI → <a href="worksite.html">현장 엣지 노드</a> ·
+        (3) Control Center → <a href="console.html">관제 트윈</a> · (5) AI 자세측정(REBA) → <a href="console.html#live">라이브 엣지</a> ·
+        (4) Worker App → 참여·동의 거버넌스(포털). 모든 모듈이 지금 열어볼 수 있는 실행 페이지입니다.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ═══════════ S5 RESULTS ═══════════ -->
+<section class="block" id="results">
+  <div class="wrap">
+    <span class="eyebrow" data-en="MEASURED EVIDENCE">측정된 근거 — 설계 목표가 아닌 결과</span>
+    <h2 class="sec-title reveal" data-en="The deployed fall logic, benchmarked on public data.">배포된 낙상 로직 그대로, 공개 데이터셋으로 검증했습니다.</h2>
+    <p class="sec-sub reveal" data-en="The exact state machine shipped in the worksite module — thresholds untouched — was run on the UR Fall Detection dataset with MoveNet MultiPose, the deployed model.">
+      현장 모듈에 실린 상태머신을 임계값 재튜닝 없이 그대로 UR Fall Detection 데이터셋에 적용했습니다
+      (백본도 배포 모델과 동일한 MoveNet MultiPose).
+    </p>
+
+    <div class="res-grid">
+      <div class="res-card reveal">
+        <h4 data-en="Confusion matrix — 16 sequences">혼동 행렬 — 16 시퀀스 (낙상 8 · 일상동작 8)</h4>
+        <div class="conf-grid">
+          <div class="conf-cell" style="background:var(--ok-bg)"><b style="color:var(--ok)">8</b><span style="color:var(--ok)">TP 낙상적중</span></div>
+          <div class="conf-cell" style="background:var(--warn-bg)"><b style="color:var(--warn)">3</b><span style="color:var(--warn)">FP 오탐</span></div>
+          <div class="conf-cell" style="background:#F0F3F7"><b style="color:var(--ink-3)">0</b><span style="color:var(--ink-3)">FN 놓침</span></div>
+          <div class="conf-cell" style="background:rgba(49,130,246,.08)"><b style="color:var(--blue)">5</b><span style="color:var(--blue)">TN 정상판정</span></div>
+        </div>
+        <div class="metric-row">
+          <div class="m"><b style="color:var(--ok)">1.00</b><span>RECALL</span></div>
+          <div class="m"><b>0.73</b><span>PRECISION</span></div>
+          <div class="m"><b>0.84</b><span>F1</span></div>
+          <div class="m"><b>0.81</b><span>ACCURACY</span></div>
+        </div>
+        <span class="ref">§4.1 · Table 3 · run_20260627_222419</span>
+      </div>
+
+      <div class="res-card reveal">
+        <h4 data-en="Detection latency per fall sequence (frames @30fps)">낙상별 감지 지연 (프레임 @30fps)</h4>
+        <div class="lat-strip" id="lat-strip" aria-label="낙상 시퀀스별 감지 지연: 150, 81, 202, 41, 118, 57, 122, 51 프레임"></div>
+        <p class="mono" style="font-size:11px;color:var(--ink-3);margin-top:6px">fall-01…08: 150 · 81 · 202 · 41 · 118 · 57 · 122 · 51 frames</p>
+        <div class="metric-row">
+          <div class="m"><b>99.5</b><span>중앙값 프레임 ≈ 3.3 s</span></div>
+          <div class="m"><b>700<small>ms</small></b><span>확인지연 포함</span></div>
+        </div>
+        <p style="font-size:12.5px;color:var(--ink-2);margin-top:10px" data-en="The 3 false positives were deep-bending/lying activities — the expected confusion for a posture+inactivity machine, and the one most fixable by a short confirmation delay.">
+          오탐 3건은 깊이 숙임·눕기 동작 — 자세+무동작 상태머신의 예상된 혼동이며, 짧은 확인지연으로 가장 쉽게 개선되는 유형입니다.</p>
+        <span class="ref">§4.1 · Figure 4 · eval_per_sequence.csv</span>
+      </div>
+
+      <div class="res-card reveal">
+        <h4 data-en="Uplink — skeleton events vs H.264 video">업링크 — 스켈레톤 이벤트 vs H.264 영상</h4>
+        <div class="bw-bar">
+          <div class="row"><span data-en="SHine-K (per worker)">SHine-K (근로자당)</span><span class="bar"><i style="width:3.5%;background:var(--ok)"></i></span><b class="val" style="color:var(--ok)">≈9 kbps</b></div>
+          <div class="row"><span>H.264 720p</span><span class="bar"><i style="width:100%;background:var(--danger)"></i></span><b class="val" style="color:var(--danger)">≈2,500 kbps</b></div>
+        </div>
+        <p style="font-size:12.5px;color:var(--ink-2)" data-en="Two to three orders of magnitude smaller — this is what makes one center watching dozens of SME sites feasible on ordinary connectivity.">
+          2–3자릿수 작은 트래픽 — 한 관제센터가 수십 개 중소사업장을 일반 회선으로 관제할 수 있는 이유입니다.</p>
+        <div class="metric-row">
+          <div class="m"><b>0.11<small>ms</small></b><span>REBA+화재 후처리/프레임</span></div>
+          <div class="m"><b>0.47 vs 0.39</b><span>YOLOv11n vs YOLO26 mAP50-95 → v11n 유지</span></div>
+        </div>
+        <span class="ref">§4.2–4.3 · 신형 모델이 항상 낫지 않음 [19,20]</span>
+      </div>
+    </div>
+
+    <figure class="arch-fig small reveal">
+      <img src="img/Figure4.png" alt="URFD 낙상 감지 혼동행렬 논문 원본: TP 8, FP 3, FN 0, TN 5 — precision 0.73, recall 1.00, F1 0.84" loading="lazy" />
+      <figcaption data-en="Figure 4 (paper original) — the same confusion matrix as reported in the manuscript, generated by the reproducibility notebook (run_20260627_222419).">
+        Figure 4 (논문 원본) — 원고에 보고된 혼동행렬 그대로, 재현 노트북이 생성 (run_20260627_222419)</figcaption>
+    </figure>
+
+    <div class="caveat reveal" data-en="Honest bound: URFD is clean, single-subject, fixed-camera lab footage and only 8 fall sequences. This validates the pose→state-machine logic and bounds — rather than equals — shop-floor performance. Recall 1.00 is a subset result, not a population guarantee (paper §4.1 verbatim).">
+      <b>정직한 한계.</b> URFD는 단일 인물·고정 카메라의 깨끗한 실험실 영상이며 낙상 시퀀스는 8개뿐입니다.
+      이 결과는 포즈→상태머신 로직의 타당성을 입증하고 현장 성능의 <b>상한을 제시</b>할 뿐, 현장 성능 그 자체가 아닙니다.
+      Recall 1.00은 부분집합 결과이지 모집단 보장이 아닙니다 (논문 §4.1 원문 그대로).
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ S6 HONESTY MATRIX ═══════════ -->
+<section class="block" id="status" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow" data-en="IMPLEMENTATION TRANSPARENCY · TABLE 2">구현 단계 투명성 · 논문 Table 2</span>
+    <h2 class="sec-title reveal" data-en="What works, what is a prototype, what is a promise.">되는 것, 시제품인 것, 약속인 것을 구분합니다.</h2>
+    <p class="sec-sub reveal" data-en="Honest staging is a stated contribution of the paper: a system meant to protect real workers must never dress design targets as results.">
+      정직한 단계 표기는 이 논문의 명시적 기여입니다 — 실제 근로자를 지키려는 시스템은 설계 목표를 결과처럼 포장해서는 안 됩니다.
+    </p>
+    <div class="hm-grid">
+      <div class="hm-col reveal"><span class="tag-measured">WORKING · 구현/측정</span>
+        <ul><li>브라우저 다인원 포즈 (MoveNet MultiPose)</li><li>낙상·무동작 상태머신 — URFD 벤치마크 검증</li><li>PPE 감지 (YOLOv11n ONNX, in-browser)</li><li>간이 REBA 자세위험 + 성능 실측</li><li>영상무전송 이벤트 전송 (스왑 가능한 전송계층)</li><li>관제 트윈 스켈레톤 재구성 · JSON 내보내기</li><li>카메라 화재 픽셀 분석</li></ul></div>
+      <div class="hm-col poc reveal"><span class="tag-poc">PROOF-OF-CONCEPT</span>
+        <ul><li>동의 기반 브레이크글라스 영상 (60초 자동차단·감사기록)</li><li>웨어러블 심박 페어링 (Web Bluetooth)</li><li>과로 누적부하 지수 (이 사이트의 시뮬레이션 값)</li></ul></div>
+      <div class="hm-col design reveal"><span class="tag-design">DESIGN TARGET · 설계 목표</span>
+        <ul><li>119/e-Gen 응급 자동연계</li><li>레이더(mmWave)·열화상 센싱</li><li>12-에이전트 자율판단 하니스 (미평가)</li><li>정확도·ROI·재해감소율 등 모든 비즈니스 지표 — <b data-en="explicitly NOT results, pending field pilot">현장 파일럿 전까지 결과 아님</b></li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ S7 PATENTS ═══════════ -->
+<section class="block" id="patents" style="background:#fff;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline)">
+  <div class="wrap">
+    <span class="eyebrow" data-en="PATENT-PLANNED TECHNOLOGY (TO BE FILED)">특허 출원예정 9대 기술</span>
+    <h2 class="sec-title reveal" data-en="Nine proposed inventions, applications in preparation — labeled by maturity, never by invented numbers.">아홉 가지 제안 기술 — 성숙도로 표기하고, 임의 번호는 붙이지 않습니다.</h2>
+    <div class="pat-grid">
+      <div class="pat-card reveal"><span class="tno">T1</span><h4>멀티모달 사고 선제예측</h4><p>영상·레이더·웨어러블·열화상을 단일 시계열로 융합해 사고 <b>이전</b>에 확률을 산출.</p><div class="foot"><span class="badge ai">출원 예정</span><span class="tag-design">design</span></div></div>
+      <div class="pat-card reveal"><span class="tno">T2</span><h4>엣지-프라이버시 파이프라인</h4><p>영상은 엣지 잔류, 가명처리 후 구조화 이벤트만 송신하는 관제 데이터 구조.</p><div class="foot"><span class="badge ai">출원 예정</span><span class="tag-measured">working</span></div></div>
+      <div class="pat-card reveal"><span class="tno">T3</span><h4>12-에이전트 협업 하니스</h4><p>Sense→Judge→Act→Connect 역할분담 에이전트의 자율 캐스케이드 의사결정.</p><div class="foot"><span class="badge ai">출원 예정</span><span class="tag-design">design</span></div></div>
+      <div class="pat-card reveal"><span class="tno">T4</span><h4>무설치 실시간 REBA</h4><p>브라우저 키포인트만으로 근골격 위험을 즉시 산출 — 앱·서버 불필요.</p><div class="foot"><span class="badge ai">출원 예정</span><span class="tag-measured">working</span></div></div>
+      <div class="pat-card reveal"><span class="tno">T5</span><h4>온열·피로 융합지수 (EWI)</h4><p>생체신호와 작업환경을 결합한 단일 조기경보 지수 — 과로·온열질환 예방.</p><div class="foot"><span class="badge ai">출원 예정</span><span class="tag-design">design</span></div></div>
+      <div class="pat-card reveal"><span class="tno">T6</span><h4>카메라 화재 조기감지</h4><p>모델 없이 불꽃색+시계열 깜빡임+연기확산 픽셀분석으로 경량 판정.</p><div class="foot"><span class="badge ai">출원 예정</span><span class="tag-measured">working</span></div></div>
+      <div class="pat-card reveal"><span class="tno">T7</span><h4>전원 대피·자동 점호</h4><p>광역 경보 푸시와 '대피완료' 응답으로 집결·미확인 인원을 실시간 집계.</p><div class="foot"><span class="badge ai">출원 예정</span><span class="tag-design">design</span></div></div>
+      <div class="pat-card reveal"><span class="tno">T8</span><h4>참여형 동의 거버넌스</h4><p>항목별 동의 토글 + 안전 행동 보상(지역화폐 연계)으로 자발적 참여 유도 — 보상은 데이터 제공량과 무관.</p><div class="foot"><span class="badge ai">출원 예정</span><span class="tag-design">design</span></div></div>
+      <div class="pat-card reveal"><span class="tno">T9</span><h4>119·e-Gen 자동연계</h4><p>감지→경보→SMS→119→병상조회를 잇는 응급 연계 프로토콜 — 10초는 현장 파일럿 전의 설계 목표.</p><div class="foot"><span class="badge ai">출원 예정</span><span class="tag-design">design</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ S8 PRIVACY ═══════════ -->
+<section class="block" id="privacy">
+  <div class="wrap">
+    <span class="eyebrow" data-en="PRIVACY & GOVERNANCE">프라이버시 · 동의 거버넌스</span>
+    <h2 class="sec-title reveal" data-en="The monitored worker stays a participant, not a subject.">감시당하는 대상이 아니라, 참여하는 주체로.</h2>
+    <div class="priv-split">
+      <div class="priv-card cam reveal">
+        <div class="head" data-en="What the camera sees (stays on-site)">카메라가 보는 것 — 현장에 남습니다</div>
+        <canvas id="priv-left" width="420" height="200" aria-label="현장 원본 영상 개념도"></canvas>
+        <div class="body" data-en="Raw video is processed inside the shop-floor browser and never uploaded. Optional alert-verification view is consent-gated, auto-stops in 60 s, and every access is audit-logged (break-glass).">
+          원본 영상은 현장 브라우저 안에서만 처리되고 업로드되지 않습니다. 알림 검증용 열람은 동의 기반이며
+          60초 후 자동 차단되고 전 건이 감사 기록됩니다(브레이크글라스).</div>
+      </div>
+      <div class="priv-card net reveal">
+        <div class="head" data-en="What leaves the site (all of it)">사업장 밖으로 나가는 것 — 이것이 전부입니다</div>
+        <canvas id="priv-right" width="420" height="200" aria-label="비식별 스켈레톤 전송 개념도"></canvas>
+        <div class="body" data-en="De-identified 17-keypoint skeletons and structured risk events. Item-level opt-in, pseudonymous IDs, purpose limitation, on-device by default (§3.4).">
+          비식별 17-키포인트 스켈레톤과 구조화된 위험 이벤트뿐. 항목별 옵트인 · 가명 ID · 목적 제한 ·
+          기기 내 처리 기본값 (§3.4).</div>
+      </div>
+    </div>
+
+    <div class="callout reveal" style="margin-top:22px">
+      <span class="tag-design" style="float:right;margin-left:12px">DESIGN TARGET</span>
+      <b data-en="Participation rewards → local currency (T8, design target).">참여 보상 → 지역화폐 환류 (T8 · 설계 목표).</b>
+      <span data-en="Completed safety behaviors — stretch/rest done, roll-call response, training — earn small local-currency credits (Korea's proven local gift-certificate model) spendable in neighborhood markets around the worksite. Three non-negotiable safeguards: rewards are never tied to the amount of data shared, opting out carries no penalty, and amounts stay small enough to avoid undue inducement. Worker protection funds the local economy — not the other way around.">
+        스트레칭·휴식 완료, 대피 점호 응답, 안전 교육처럼 <b>완료된 안전 행동</b>에만 소액의 지역화폐(한국에서 검증된
+        지역사랑상품권 모델, 지자체 연계 필요)를 적립해 사업장 주변 영세 상권에서 쓰게 합니다.
+        3대 안전장치 — ① 보상은 데이터 제공량과 절대 비연동 ② 옵트아웃 무불이익 ③ 과도 유인이 되지 않는 소액 상한.
+        근로자 보호가 지역 경제로 환류되는 구조이며, <a href="worksite.html">현장 엣지 노드</a>에서 적립 흐름을 시연합니다.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ S9 TEAM / LINKS ═══════════ -->
+<section class="block" id="team" style="padding-top:0">
+  <div class="wrap">
+    <span class="eyebrow" data-en="PAPER · TEAM · LINKS">논문 · 팀 · 링크</span>
+    <h2 class="sec-title reveal">Kyungwoon University 근로자안전센터</h2>
+    <p class="sec-sub reveal" data-en="This article substantially extends a two-page precursor presented at the 74th KSCI Conference (Jeju, July 2026). Funded by the Gyeongsangbuk-do RISE program, 2025–2029.">
+      본 논문은 제74차 한국컴퓨터정보학회(KSCI) 하계학술대회(제주, 2026.7) 2쪽 발표논문의 대폭 확장본입니다.
+      경상북도 RISE 사업 "중소제조업 자율안전관리 선도 SHine-K 플랫폼 구축" (2025–2029) 지원.
+    </p>
+    <div class="team-grid">
+      <div class="tm reveal"><b>최완석</b> <span class="en-name">Wansuk Choi *</span><p data-en="Corresponding · methodology · software · KSCI presenter — Dept. of Physical Therapy">교신저자 · 방법론·소프트웨어 · KSCI 발표 — 물리치료학과 · wschoi@kyungwoon.ac.kr</p></div>
+      <div class="tm reveal"><b>신형수</b> <span class="en-name">Hyungsoo Shin</span><p data-en="Supervision · funding — College of Health Sciences">총괄·연구비 — 보건과학대학</p></div>
+      <div class="tm reveal"><b>최태석</b> <span class="en-name">Taesoek Choi</span><p data-en="Validation — Dept. of Nursing">검증 — 간호학과</p></div>
+      <div class="tm reveal"><b>구미란</b> <span class="en-name">Miran Gu</span><p data-en="Validation · editing — Dept. of Nursing">검증·교정 — 간호학과</p></div>
+      <div class="tm reveal"><b>허서윤</b> <span class="en-name">Seoyoon Heo</span><p data-en="Investigation — Dept. of Physical Therapy">조사 — 물리치료학과</p></div>
+      <div class="tm reveal"><b>김기현</b> <span class="en-name">Ki Hyun Kim</span><p data-en="Investigation — Dept. of Physical Therapy">조사 — 물리치료학과</p></div>
+      <div class="tm reveal"><b>장유성</b> <span class="en-name">Yoosung Jang</span><p data-en="Investigation — Dept. of Physical Therapy">조사 — 물리치료학과</p></div>
+    </div>
+
+    <div class="links-row reveal">
+      <a class="link-card" href="https://github.com/y3korea/SHine-K-" target="_blank" rel="noopener">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.58 9.58 0 015 0c1.91-1.3 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85V21c0 .27.18.58.69.48A10 10 0 0012 2z"/></svg>
+        GitHub — 재현 코드·노트북</a>
+      <a class="link-card" href="console.html" data-en="Control Console (Sim + Live)">관제 콘솔 — 시뮬레이션+라이브</a>
+      <a class="link-card" href="portal.html" data-en="Service Portal Prototype (Enterprise / Center)">서비스 포털(프로토타입) — 기업/관제센터</a>
+      <a class="link-card" href="https://profound-pastelito-feec33.netlify.app/" target="_blank" rel="noopener" data-en="Original live build (paper link)">기존 라이브 빌드 (논문 링크)</a>
+    </div>
+
+    <div class="bibtex reveal" id="bibtex">
+      <button id="bib-copy" data-en="Copy">복사</button>
+@article{shin2026shinek,
+  title   = {Design and Working Prototype of {SHine-K}: An Edge-AI, Video-Free
+             Web Platform for Centralized Worker Safety-and-Health Monitoring
+             in {SME} Manufacturing},
+  author  = {Shin, Hyungsoo and Choi, Taesoek and Heo, Seoyoon and Kim, Ki Hyun
+             and Jang, Yoosung and Gu, Miran and Choi, Wansuk},
+  journal = {Sensors (MDPI), submitted},
+  year    = {2026}
+}</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    SHine-K · 경운대학교 근로자안전센터 · 경상북도 RISE — 이 사이트의 시뮬레이션은 합성 데이터이며,
+    라이브 데모는 방문자 기기 안에서만 추론합니다(영상무전송). 측정 결과와 설계 목표는 항상 구분 표기됩니다.<br>
+    run_20260627_222419 · seed 20260722 · 데모 포털은 실제 인증·개인정보 수집이 없습니다.
+  </div>
+</footer>
+
+<script src="js/landing.js"></script>
+</body>
+</html>

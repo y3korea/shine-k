@@ -284,4 +284,20 @@
 
   /* a first ambient event so the feed is never empty */
   setTimeout(function () { Sim.scenario('ppe'); }, 4000);
+
+  /* demo/capture helpers via query params:
+   *   ?autoreplay — start the synthetic REPLAY on load (e.g. console.html?autoreplay#live)
+   *   ?demo       — inject a fall + fire shortly after load for guided demos */
+  if (location.search.indexOf('autoreplay') > -1) {
+    setTimeout(function () {
+      Live.state.cv = document.getElementById('live-canvas');
+      Live.state.ctx = Live.state.cv.getContext('2d');
+      Live.state.video = document.getElementById('live-video');
+      Live.startReplay();
+    }, 600);
+  }
+  if (location.search.indexOf('demo') > -1) {
+    setTimeout(function () { Sim.scenario('fall'); }, 2500);
+    setTimeout(function () { Sim.scenario('fire'); }, 5000);
+  }
 })();

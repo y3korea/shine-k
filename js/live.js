@@ -233,9 +233,10 @@
     L.raf = requestAnimationFrame(replayLoop);
   }
 
-  /* background heartbeat for REPLAY — rAF pauses in hidden tabs, timers don't */
+  /* background heartbeat for REPLAY — rAF pauses in hidden tabs, timers don't.
+   * Also active under ?autoreplay (headless captures / kiosk demos). */
   setInterval(function () {
-    if (L.mode === 'replay' && document.hidden) {
+    if (L.mode === 'replay' && (document.hidden || /[?&]autoreplay/.test(location.search))) {
       L.replayT += 1.0;
       var kps = replayKps(L.replayT, 640, 480);
       analyse(kps, 640, 480, L.replayT * 1000, 'replay');

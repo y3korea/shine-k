@@ -658,9 +658,11 @@
   /* ───────────────────────── public API ───────────────────────── */
 
   /* background heartbeat — rAF pauses in hidden tabs, but an edge node must
-   * keep detecting; timers still fire (~1 Hz), enough for the state machines */
+   * keep detecting; timers still fire (~1 Hz), enough for the state machines.
+   * Also active under ?demo (guided demos / headless captures, where rAF is
+   * throttled but virtual-time advances timers). */
   setInterval(function () {
-    if (document.hidden && S.running && S.workers.length) {
+    if ((document.hidden || /[?&]demo/.test(location.search)) && S.running && S.workers.length) {
       tick(1.0 * S.speed);
       renderKpi();
     }

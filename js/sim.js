@@ -64,6 +64,11 @@
     recover:   { ko: '정상 복귀',   en: 'RECOVERED',   sev: 'ok' }
   };
 
+  /* console language: 'en' via ?en or persisted toggle (default ko) */
+  var EN = /[?&]en\b/.test(location.search) ||
+           (function () { try { return localStorage.getItem('shinek_console_lang') === 'en'; } catch (e) { return false; } })();
+  global.SHLANG = EN ? 'en' : 'ko';
+
   function rand(a, b) { return a + _rng() * (b - a); }
   function pick(arr) { return arr[Math.floor(_rng() * arr.length)]; }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
@@ -182,7 +187,7 @@
     try {
       if (!global.speechSynthesis) return;
       var u = new SpeechSynthesisUtterance(txt);
-      u.lang = 'ko-KR'; u.rate = 1.05;
+      u.lang = EN ? 'en-US' : 'ko-KR'; u.rate = 1.05;
       global.speechSynthesis.speak(u);
     } catch (e) { /* non-fatal */ }
   }
@@ -203,7 +208,7 @@
     S.eventsToday.total++;
     pushUplink({ type: 'alert', kind: kind, id: workerId, site: ev.site, src: ev.source }, true);
     renderFeed(); animateAgents(kind); renderKpi();
-    if (k.sev === 'crit' && S.ttsOn) speak(k.ko + ' 발생. ' + (workerId || '') + ' 확인 바랍니다.');
+    if (k.sev === 'crit' && S.ttsOn) speak(EN ? (k.en + ' detected. Check ' + (workerId || 'site') + '.') : (k.ko + ' 발생. ' + (workerId || '') + ' 확인 바랍니다.'));
     if (navigator.vibrate && k.sev === 'crit') navigator.vibrate([120, 60, 120]);
     if (S.onEvent) S.onEvent(ev);
   }
@@ -437,9 +442,11 @@
       ctx.fillStyle = 'rgba(148,163,184,0.55)';
       ctx.font = '600 10px "JetBrains Mono", monospace';
       ctx.fillText(z.en, z.x + 10, z.y + 16);
-      ctx.fillStyle = 'rgba(226,232,240,0.75)';
-      ctx.font = '600 11px Pretendard, sans-serif';
-      ctx.fillText(z.ko, z.x + 10, z.y + 30);
+      if (!EN) {
+        ctx.fillStyle = 'rgba(226,232,240,0.75)';
+        ctx.font = '600 11px Pretendard, sans-serif';
+        ctx.fillText(z.ko, z.x + 10, z.y + 30);
+      }
     });
 
     // fire particles
@@ -585,7 +592,7 @@
     d.className = 'ev ' + ev.sev + (ev.source === 'LIVE' ? ' live' : '');
     d.innerHTML =
       '<span class="ev-time">' + fmtTime(ev.ts) + '</span>' +
-      '<span class="ev-kind">' + k.ko + ' <i>' + k.en + ' · ' + ev.sev.toUpperCase() + '</i></span>' +
+      '<span class="ev-kind">' + (EN ? k.en : k.ko) + ' <i>' + (EN ? '' : k.en + ' · ') + ev.sev.toUpperCase() + '</i></span>' +
       '<span class="ev-meta">' + (ev.worker ? ev.worker + ' · ' : '') + ev.site +
       ' · <b class="src">' + ev.source + '</b></span>';
     return d;
@@ -617,7 +624,7 @@
             w.state === 'freeze' ? KINDS.inactive :
             w.state === 'heat' ? KINDS.heat : !w.ppe ? KINDS.ppe : null;
     el.querySelector('.wc-id').textContent = w.id;
-    el.querySelector('.wc-zone').textContent = w.zone.ko + ' · ' + w.zone.en;
+    el.querySelector('.wc-zone').textContent = EN ? w.zone.en : (w.zone.ko + ' · ' + w.zone.en);
     el.querySelector('.wc-hr').textContent = Math.round(w.hr);
     el.querySelector('.wc-reba').textContent = 'L' + w.reba;
     var loadEl = el.querySelector('.wc-load');
@@ -627,10 +634,10 @@
       loadEl.style.color = lv > 78 ? 'var(--danger)' : lv > 55 ? 'var(--warn)' : 'var(--ok)';
     }
     var wmEl = el.querySelector('.wc-worked');
-    if (wmEl) wmEl.textContent = Math.round(w.workedMin || 0) + '분';
+    if (wmEl) wmEl.textContent = Math.round(w.workedMin || 0) + (EN ? ' min' : '분');
     el.querySelector('.wc-state').innerHTML = k ?
-      '<span class="badge ' + k.sev + '">' + k.ko + '</span>' :
-      '<span class="badge ok">정상 NORMAL</span>';
+      '<span class="badge ' + k.sev + '">' + (EN ? k.en : k.ko) + '</span>' :
+      '<span class="badge ok">' + (EN ? 'NORMAL' : '정상 NORMAL') + '</span>';
     el.querySelector('.wc-sm').textContent =
       'tilt ' + Math.round(w.sm.tilt) + '° · asp ' + w.sm.aspect.toFixed(2) + ' · state ' + w.sm.state;
   }
@@ -679,9 +686,11 @@
       renderUplink(ts);
       if (S.el.clock) S.el.clock.textContent = fmtTime(new Date());
       if (S.el.kUplink) S.el.kUplink.textContent = S.uplinkBps.toFixed(1);
-      if (S.el.upStats) S.el.upStats.innerHTML =
-        '누적 <b>' + (S.uplinkTotal / 1024).toFixed(1) + ' KB</b> · ' + S.msgCount + ' msgs' +
-        ' · 영상 대비 <b class="save">×' + Math.round(VIDEO_KBPS / Math.max(0.1, S.uplinkBps)) + '</b> 절감';
+      if (S.el.upStats) S.el.upStats.innerHTML = EN
+        ? ('total <b>' + (S.uplinkTotal / 1024).toFixed(1) + ' KB</b> · ' + S.msgCount + ' msgs' +
+           ' · <b class="save">×' + Math.round(VIDEO_KBPS / Math.max(0.1, S.uplinkBps)) + '</b> less than video')
+        : ('누적 <b>' + (S.uplinkTotal / 1024).toFixed(1) + ' KB</b> · ' + S.msgCount + ' msgs' +
+           ' · 영상 대비 <b class="save">×' + Math.round(VIDEO_KBPS / Math.max(0.1, S.uplinkBps)) + '</b> 절감');
       if (S.focusWorker) renderWorkerCard();
     }
     requestAnimationFrame(frame);

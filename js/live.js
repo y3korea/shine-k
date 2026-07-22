@@ -18,6 +18,8 @@
     replayT: 0, raf: 0
   };
 
+  function EN() { return global.SHLANG === 'en'; }
+
   var CDN = [
     'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@4.20.0/dist/tf-core.min.js',
     'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@4.20.0/dist/tf-converter.min.js',
@@ -96,7 +98,8 @@
       L.lastAlert = wall;
       if (global.SHSim) global.SHSim.ingestLive(st === 'fall' ? 'fall' : 'inactive',
         { tilt: Math.round(sm.tilt), src: L.mode.toUpperCase() });
-      announce(st === 'fall' ? '낙상 감지 — 관제센터에 알림 전송됨' : '무동작 감지 — 관제센터에 알림 전송됨');
+      announce(EN() ? (st === 'fall' ? 'Fall detected — alert sent to control center' : 'Inactivity detected — alert sent to control center')
+                    : (st === 'fall' ? '낙상 감지 — 관제센터에 알림 전송됨' : '무동작 감지 — 관제센터에 알림 전송됨'));
     }
     L.lastState = st;
     return { state: st, trunk: trunk, arm: arm };
@@ -111,12 +114,14 @@
   function hud(res, persons) {
     var el = document.getElementById('live-hud');
     if (!el) return;
-    var map = { normal: ['정상', 'ok'], warn: ['주의', 'warn'], fall: ['낙상!', 'crit'], inactive: ['무동작!', 'crit'], sedentary: ['장시간 정지', 'warn'] };
+    var map = EN()
+      ? { normal: ['NORMAL', 'ok'], warn: ['WARN', 'warn'], fall: ['FALL!', 'crit'], inactive: ['INACTIVE!', 'crit'], sedentary: ['SEDENTARY', 'warn'] }
+      : { normal: ['정상', 'ok'], warn: ['주의', 'warn'], fall: ['낙상!', 'crit'], inactive: ['무동작!', 'crit'], sedentary: ['장시간 정지', 'warn'] };
     var m = map[res.state] || map.normal;
     el.innerHTML =
-      '<span class="badge ' + m[1] + '">' + m[0] + ' · ' + res.state.toUpperCase() + '</span>' +
+      '<span class="badge ' + m[1] + '">' + m[0] + (EN() ? '' : ' · ' + res.state.toUpperCase()) + '</span>' +
       '<span class="hud-m">REBA L' + L.reba + '</span>' +
-      '<span class="hud-m">' + persons + '명 · ' + L.fps.toFixed(0) + ' FPS</span>' +
+      '<span class="hud-m">' + persons + (EN() ? 'p · ' : '명 · ') + L.fps.toFixed(0) + ' FPS</span>' +
       '<span class="hud-m mono">tilt ' + Math.round(res.trunk) + '°</span>';
   }
 
@@ -153,7 +158,7 @@
       L.raf = requestAnimationFrame(liveLoop);
     }).catch(function (e) {
       if (L.mode !== 'live' || gen !== L.startGen) return;
-      setStatus('추론 오류: ' + e.message, 'err');
+      setStatus((EN() ? 'inference error: ' : '추론 오류: ') + e.message, 'err');
       L.raf = requestAnimationFrame(liveLoop);
     });
   }
@@ -254,9 +259,9 @@
     if (global.SHSim) global.SHSim.setLiveTile(false);
     var el = document.getElementById('live-hud');
     if (el) el.innerHTML = '';
-    setStatus('꺼짐 · OFF', '');
+    setStatus(EN() ? 'OFF' : '꺼짐 · OFF', '');
     var btn = document.getElementById('btn-live');
-    if (btn) btn.lastChild.textContent = btn.dataset.idleLabel || ' 내 카메라를 CAM-07로 연결';
+    if (btn) btn.lastChild.textContent = btn.dataset.idleLabel || (EN() ? ' Connect my camera as CAM-07' : ' 내 카메라를 CAM-07로 연결');
   }
 
   function startReplay(reason) {
@@ -265,7 +270,7 @@
     L.sms = {}; L.replayT = 0; replayLast = 0; L.lastAlert = 0;
     if (L.video) L.video.style.display = 'none';
     if (L.cv) L.cv.style.transform = 'none';   // replay scene is not mirrored
-    setStatus((reason ? reason + ' — ' : '') + '합성 REPLAY로 동일 파이프라인 시연 중', 'warn');
+    setStatus((reason ? reason + ' — ' : '') + (EN() ? 'synthetic REPLAY driving the same pipeline' : '합성 REPLAY로 동일 파이프라인 시연 중'), 'warn');
     if (global.SHSim) global.SHSim.setLiveTile(true);
     L.raf = requestAnimationFrame(replayLoop);
   }
@@ -281,10 +286,10 @@
     var btn = document.getElementById('btn-live');
     if (btn) {
       if (!btn.dataset.idleLabel) btn.dataset.idleLabel = btn.lastChild.textContent;
-      btn.lastChild.textContent = ' 연결 해제 · STOP';
+      btn.lastChild.textContent = EN() ? ' STOP' : ' 연결 해제 · STOP';
     }
 
-    setStatus('TF.js + MoveNet MultiPose 로딩 중…', 'load');
+    setStatus(EN() ? 'Loading TF.js + MoveNet MultiPose…' : 'TF.js + MoveNet MultiPose 로딩 중…', 'load');
     var chain = Promise.resolve();
     if (!global.poseDetection) {
       CDN.forEach(function (src) { chain = chain.then(function () { return loadScript(src); }); });
@@ -301,7 +306,7 @@
     }).then(function (det) {
       if (gen !== L.startGen) throw { stale: true };
       L.detector = det;
-      setStatus('카메라 권한 요청 중…', 'load');
+      setStatus(EN() ? 'Requesting camera permission…' : '카메라 권한 요청 중…', 'load');
       return navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
     }).then(function (stream) {
       if (gen !== L.startGen) { stream.getTracks().forEach(function (t) { t.stop(); }); throw { stale: true }; }
@@ -312,15 +317,15 @@
     }).then(function () {
       if (gen !== L.startGen) throw { stale: true };
       L.mode = 'live';
-      setStatus('<b>● LIVE</b> — 영상은 이 탭 밖으로 나가지 않습니다 · 이벤트만 전송', 'live');
+      setStatus(EN() ? '<b>● LIVE</b> — frames never leave this tab · events only' : '<b>● LIVE</b> — 영상은 이 탭 밖으로 나가지 않습니다 · 이벤트만 전송', 'live');
       if (global.SHSim) global.SHSim.setLiveTile(true);
       liveLoop();
     }).catch(function (e) {
       if (e && e.stale) return;          // superseded by stop()/replay — stay silent
       console.warn('live mode fallback:', e);
       if (gen !== L.startGen) return;
-      if (L.detector && !L.stream) startReplay('카메라 사용 불가(' + (e.name || 'error') + ')');
-      else startReplay('모델/네트워크 사용 불가');
+      if (L.detector && !L.stream) startReplay((EN() ? 'camera unavailable (' : '카메라 사용 불가(') + (e.name || 'error') + ')');
+      else startReplay(EN() ? 'model/network unavailable' : '모델/네트워크 사용 불가');
     });
   }
 

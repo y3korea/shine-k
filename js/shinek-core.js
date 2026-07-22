@@ -1,6 +1,7 @@
 /* SHine-K core — the deployed fall/inactivity state machine and simplified REBA.
- * This is the SAME logic evaluated on URFD in the Sensors paper
- * (recall 1.00, precision 0.73, F1 0.84; deployed defaults, sens = 1.0).
+ * This is the SAME logic evaluated on URFD in the Sensors paper (deployed
+ * defaults, sens = 1.0): full 70-sequence benchmark recall 0.77 / F1 0.68,
+ * standing-fall subset recall 1.00 / F1 0.84.
  * Keypoints follow COCO-17 order: [x, y, score] per joint.
  */
 (function (global) {

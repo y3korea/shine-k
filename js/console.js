@@ -285,6 +285,8 @@
   /* a first ambient event so the feed is never empty */
   setTimeout(function () { Sim.scenario('ppe'); }, 4000);
 
+  if (location.search.indexOf('light') > -1) document.body.classList.add('capture-light');
+
   /* demo/capture helpers via query params:
    *   ?autoreplay — start the synthetic REPLAY on load (e.g. console.html?autoreplay#live)
    *   ?demo       — inject a fall + fire shortly after load for guided demos */

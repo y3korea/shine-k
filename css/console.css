@@ -297,3 +297,27 @@ body.theme-dark {
   .brand, .paper-link, .pill-online { white-space: nowrap; }
 }
 .paper-link, .org-pill { white-space: nowrap; }
+
+/* ── print/capture light theme (?light) — chrome turns light, canvases stay
+   dark viewports; used for the manuscript figure, not the public default ── */
+body.capture-light {
+  --bg: #F4F7FB; --card: #FFFFFF; --elev: #F0F3F7;
+  --hairline: #D8DEE7;
+  --ink-1: #191F28; --ink-2: #3F4A5A; --ink-3: #5A6678; --ink-4: #8B95A1;
+  background: var(--bg);
+}
+body.capture-light .topbar { background: rgba(255,255,255,.94); border-bottom-color: var(--hairline); }
+body.capture-light .tab.active { color: #0F1525; background: rgba(49,130,246,.14); }
+body.capture-light .panel { box-shadow: 0 1px 4px rgba(15,21,37,.06); }
+body.capture-light .seed, body.capture-light .map-hint { color: #6B7684; }
+body.capture-light .up-line { color: #4E5968; }
+body.capture-light .clock { color: #191F28; }
+body.capture-light .sc-btn { background: #FFFFFF; }
+body.capture-light .kpi b { color: #191F28; }
+body.capture-light .kpi.crit b { color: var(--danger); }
+body.capture-light .kpi.warn b { color: var(--warn); }
+body.capture-light .kpi.ok b { color: #0B8A62; }
+body.capture-light .ev { background: #F7F9FC; }
+body.capture-light .ev.crit { background: rgba(240,68,82,.08); }
+body.capture-light .ev.warn { background: rgba(245,158,11,.09); }
+body.capture-light .trace { color: #3F4A5A; }

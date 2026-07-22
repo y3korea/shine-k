@@ -1,6 +1,6 @@
 # SHine-K (Safety and Health in Enterprise) 쇼케이스 웹사이트 (shine-k-site)
 
-Sensors (MDPI) 투고 논문 **"Design and Working Prototype of SHine-K: An Edge-AI, Video-Free Web
+IEEE Access 투고 논문 **"Design and Working Prototype of SHine-K: An Edge-AI, Video-Free Web
 Platform for Centralized Worker Safety-and-Health Monitoring in SME Manufacturing"** 을 대변하는
 정적 웹사이트. 시뮬레이션(디지털 트윈)과 리얼월드 실행(웹캠 엣지 AI)이 **하나의 이벤트 버스**를
 공유하는 것이 핵심 설계입니다.

@@ -32,6 +32,7 @@ python3 -m http.server 8765 --directory shine-k-site
 - 웹캠(LIVE)은 `localhost` 또는 **https** 환경에서만 동작합니다(브라우저 보안 정책).
 - 외부 CDN 2종만 사용: Pretendard/JetBrains Mono 폰트, TF.js(라이브 진입 시 지연 로드).
 - 배포: 폴더 전체를 Netlify/GitHub Pages/Vercel에 그대로 업로드하면 됩니다.
+- **라이브 배포(GitHub Pages)**: https://y3korea.github.io/shine-k/ (소스: https://github.com/y3korea/shine-k)
 
 ## 정직성 규칙 (논문 Table 2와 일치)
 
@@ -40,3 +41,7 @@ python3 -m http.server 8765 --directory shine-k-site
 - 119/e-Gen·레이더/열화상·12-에이전트·비즈니스 지표는 "설계 목표"로만 표기 — 결과처럼 보이지 않게.
 - 특허 9건은 "patent-pending"으로만 표기(임의 번호 없음).
 - 데모 포털은 비밀번호를 요구하지 않으며 개인정보를 수집하지 않음.
+
+## 지원
+
+This research was supported by the ANCHOR program through the Gyeongbuk ANCHOR Center, funded by the Ministry of Education (MOE) and Gyeongsangbuk-do, Republic of Korea (2026-ANCHOR-15-102).

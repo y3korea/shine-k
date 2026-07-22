@@ -1,4 +1,4 @@
-# SHine-K 쇼케이스 웹사이트 (shine-k-site)
+# SHine-K (Safety and Health in Enterprise) 쇼케이스 웹사이트 (shine-k-site)
 
 Sensors (MDPI) 투고 논문 **"Design and Working Prototype of SHine-K: An Edge-AI, Video-Free Web
 Platform for Centralized Worker Safety-and-Health Monitoring in SME Manufacturing"** 을 대변하는

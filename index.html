@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>SHine-K — 브라우저가 곧 엣지 AI · 영상무전송 중소제조 안전관제 플랫폼</title>
-<meta name="description" content="SHine-K: 설치 없는 브라우저 엣지 AI로 영상 없이 다중 사업장을 관제하는 근로자 안전·건강 플랫폼. Sensors (MDPI) 투고 논문 공식 사이트 — URFD 낙상 감지 recall 1.00 · F1 0.84." />
+<meta name="description" content="SHine-K: 설치 없는 브라우저 엣지 AI로 영상 없이 다중 사업장을 관제하는 근로자 안전·건강 플랫폼. Sensors (MDPI) 투고 논문 공식 사이트 — URFD 전체 70시퀀스 recall 0.77·F1 0.68 (표준자세 부분집합 recall 1.00·F1 0.84)." />
 <meta property="og:title" content="SHine-K — Edge-AI, Video-Free Worker Safety Platform" />
 <meta property="og:description" content="The browser is the edge node. Video-free, zero-install worker safety monitoring for SME manufacturing — with a live simulation twin and a real in-browser demo." />
 <meta property="og:type" content="website" />
@@ -56,9 +56,9 @@
           픽셀은 단 하나도 — 전송합니다.
         </p>
         <div class="hero-stats">
-          <div class="hstat ok"><b data-count="1.00" data-dec="2">1.00</b><span>URFD RECALL (8/8 낙상)</span></div>
-          <div class="hstat"><b data-count="0.84" data-dec="2">0.84</b><span>F1 SCORE</span></div>
-          <div class="hstat"><b>≈3.3<small>s</small></b><span>중앙값 감지 지연</span></div>
+          <div class="hstat ok"><b data-count="0.77" data-dec="2">0.77</b><span>URFD RECALL · 전체 23/30</span></div>
+          <div class="hstat"><b data-count="0.68" data-dec="2">0.68</b><span>F1 · FULL 70시퀀스</span></div>
+          <div class="hstat"><b>≈1.9<small>s</small></b><span>중앙값 감지 지연</span></div>
           <div class="hstat"><b>0.11<small>ms</small></b><span>후처리/프레임</span></div>
           <div class="hstat"><b>×10²⁻³</b><span>업링크 절감 vs 영상</span></div>
         </div>
@@ -67,7 +67,7 @@
           <a class="btn-ghost" href="console.html#live" data-en="Try Live Edge (Your Webcam)">라이브 엣지 체험 (내 웹캠)</a>
           <a class="btn-ghost" href="portal.html" data-en="Service Portal (Prototype)">서비스 포털 (프로토타입)</a>
         </div>
-        <p class="hero-run">run_20260627_222419 · thresholds unchanged from deployment · seed 20260722</p>
+        <p class="hero-run">run_20260722_195713_full70 (전체) · run_20260627_222419 (부분집합) · thresholds unchanged · seed 20260722</p>
       </div>
       <div class="hero-vis">
         <span class="tag">CONTROL TWIN — EVENT-ONLY UPLINK</span>
@@ -195,20 +195,22 @@
 
     <div class="res-grid">
       <div class="res-card reveal">
-        <h4 data-en="Confusion matrix — 16 sequences">혼동 행렬 — 16 시퀀스 (낙상 8 · 일상동작 8)</h4>
+        <h4 data-en="Confusion matrix — FULL benchmark, 70 sequences">혼동 행렬 — 전체 70 시퀀스 (낙상 30 · 일상동작 40)</h4>
         <div class="conf-grid">
-          <div class="conf-cell" style="background:var(--ok-bg)"><b style="color:var(--ok)">8</b><span style="color:var(--ok)">TP 낙상적중</span></div>
-          <div class="conf-cell" style="background:var(--warn-bg)"><b style="color:var(--warn)">3</b><span style="color:var(--warn)">FP 오탐</span></div>
-          <div class="conf-cell" style="background:#F0F3F7"><b style="color:var(--ink-3)">0</b><span style="color:var(--ink-3)">FN 놓침</span></div>
-          <div class="conf-cell" style="background:rgba(49,130,246,.08)"><b style="color:var(--blue)">5</b><span style="color:var(--blue)">TN 정상판정</span></div>
+          <div class="conf-cell" style="background:var(--ok-bg)"><b style="color:var(--ok)">23</b><span style="color:var(--ok)">TP 낙상적중</span></div>
+          <div class="conf-cell" style="background:var(--warn-bg)"><b style="color:var(--warn)">15</b><span style="color:var(--warn)">FP 오탐</span></div>
+          <div class="conf-cell" style="background:var(--danger-bg)"><b style="color:var(--danger)">7</b><span style="color:var(--danger)">FN 놓침</span></div>
+          <div class="conf-cell" style="background:rgba(49,130,246,.08)"><b style="color:var(--blue)">25</b><span style="color:var(--blue)">TN 정상판정</span></div>
         </div>
         <div class="metric-row">
-          <div class="m"><b style="color:var(--ok)">1.00</b><span>RECALL</span></div>
-          <div class="m"><b>0.73</b><span>PRECISION</span></div>
-          <div class="m"><b>0.84</b><span>F1</span></div>
-          <div class="m"><b>0.81</b><span>ACCURACY</span></div>
+          <div class="m"><b style="color:var(--ok)">0.77</b><span>RECALL</span></div>
+          <div class="m"><b>0.61</b><span>PRECISION</span></div>
+          <div class="m"><b>0.68</b><span>F1</span></div>
+          <div class="m"><b>0.69</b><span>ACCURACY</span></div>
         </div>
-        <span class="ref">§4.1 · Table 3 · run_20260627_222419</span>
+        <p style="font-size:12.5px;color:var(--ink-2);margin-top:10px" data-en="Standing-fall subset (8 falls + 8 ADL): recall 1.00 · precision 0.73 · F1 0.84 — the full run confirms the manuscript's own caution that the subset bounds, not represents, benchmark performance.">
+          표준자세 부분집합(낙상 8+ADL 8): recall 1.00 · precision 0.73 · F1 0.84 — 전체 런은 "부분집합 수치는 상한"이라던 원고 자체 경고가 옳았음을 확인했습니다.</p>
+        <span class="ref">§4.1 · Table 3 · run_20260722_195713_full70 + run_20260627_222419</span>
       </div>
 
       <div class="res-card reveal">
@@ -216,12 +218,13 @@
         <div class="lat-strip" id="lat-strip" aria-label="낙상 시퀀스별 감지 지연: 150, 81, 202, 41, 118, 57, 122, 51 프레임"></div>
         <p class="mono" style="font-size:11px;color:var(--ink-3);margin-top:6px">fall-01…08: 150 · 81 · 202 · 41 · 118 · 57 · 122 · 51 frames</p>
         <div class="metric-row">
-          <div class="m"><b>99.5</b><span>중앙값 프레임 ≈ 3.3 s</span></div>
+          <div class="m"><b>57</b><span>중앙값 프레임 ≈ 1.9 s (전체 런)</span></div>
           <div class="m"><b>700<small>ms</small></b><span>확인지연 포함</span></div>
         </div>
-        <p style="font-size:12.5px;color:var(--ink-2);margin-top:10px" data-en="The 3 false positives were deep-bending/lying activities — the expected confusion for a posture+inactivity machine, and the one most fixable by a short confirmation delay.">
-          오탐 3건은 깊이 숙임·눕기 동작 — 자세+무동작 상태머신의 예상된 혼동이며, 짧은 확인지연으로 가장 쉽게 개선되는 유형입니다.</p>
-        <span class="ref">§4.1 · Figure 4 · eval_per_sequence.csv</span>
+        <p style="font-size:12.5px;color:var(--ink-2);margin-top:10px" data-en="Per-frame diagnostics: missed falls crossed thresholds only transiently (max tilt to 89°) but never sustained the 700-ms window; false alarms split into deep-bending vs deliberate lying-down classes.">
+          프레임 진단 결과: 미탐 7건은 임계값을 순간적으로만 통과(최대 tilt 89°)하고 700ms 확인창을 지속하지 못했으며,
+          오탐 15건은 깊은 숙임형과 의도적 눕기형으로 갈립니다 — 막대는 부분집합 런의 감지 지연.</p>
+        <span class="ref">§4.1 · Figure 4 · eval_per_sequence.csv (양쪽 런)</span>
       </div>
 
       <div class="res-card reveal">
@@ -241,15 +244,16 @@
     </div>
 
     <figure class="arch-fig small reveal">
-      <img src="img/Figure4.png" alt="URFD 낙상 감지 혼동행렬 논문 원본: TP 8, FP 3, FN 0, TN 5 — precision 0.73, recall 1.00, F1 0.84" loading="lazy" />
-      <figcaption data-en="Figure 4 (paper original) — the same confusion matrix as reported in the manuscript, generated by the reproducibility notebook (run_20260627_222419).">
-        Figure 4 (논문 원본) — 원고에 보고된 혼동행렬 그대로, 재현 노트북이 생성 (run_20260627_222419)</figcaption>
+      <img src="img/Figure4.png" alt="URFD 전체 70시퀀스 혼동행렬: TP 23, FP 15, FN 7, TN 25 — precision 0.61, recall 0.77, F1 0.68" loading="lazy" />
+      <figcaption data-en="Figure 4 (paper original) — full 70-sequence confusion matrix, generated by the reproducibility notebook (run_20260722_195713_full70).">
+        Figure 4 (논문 원본) — 전체 70시퀀스 혼동행렬, 재현 노트북 생성 (run_20260722_195713_full70)</figcaption>
     </figure>
 
-    <div class="caveat reveal" data-en="Honest bound: URFD is clean, single-subject, fixed-camera lab footage and only 8 fall sequences. This validates the pose→state-machine logic and bounds — rather than equals — shop-floor performance. Recall 1.00 is a subset result, not a population guarantee (paper §4.1 verbatim).">
-      <b>정직한 한계.</b> URFD는 단일 인물·고정 카메라의 깨끗한 실험실 영상이며 낙상 시퀀스는 8개뿐입니다.
-      이 결과는 포즈→상태머신 로직의 타당성을 입증하고 현장 성능의 <b>상한을 제시</b>할 뿐, 현장 성능 그 자체가 아닙니다.
-      Recall 1.00은 부분집합 결과이지 모집단 보장이 아닙니다 (논문 §4.1 원문 그대로).
+    <div class="caveat reveal" data-en="Honest bound: URFD is clean, single-subject, fixed-camera lab footage. The full 70-sequence run measured what the subset could only warn about (recall 0.77 vs 1.00) and shows the failure modes are structured — camera-axis foreshortening, unfinished confirmation windows in short clips, deliberate lying-down. Even the full result bounds, not equals, shop-floor performance (§4.1).">
+      <b>정직한 한계.</b> URFD는 단일 인물·고정 카메라의 깨끗한 실험실 영상입니다. 전체 70시퀀스 런은 부분집합의
+      recall 1.00이 상한이었음을 실측으로 확인해 주었고(전체 0.77), 실패 유형이 구조적임을 보여줍니다 —
+      카메라 축 방향 낙상의 원근 은폐, 짧은 클립에서의 확인창 미완, 의도적 눕기. 전체 결과조차 현장 성능의
+      <b>상한 근거</b>일 뿐이며, 현장 파일럿은 남은 과제입니다 (논문 §4.1).
     </div>
   </div>
 </section>

@@ -184,22 +184,22 @@
 
     <!-- ═══════════ #evidence ═══════════ -->
     <section class="route" id="route-evidence">
-      <span class="mode-badge live">⟦ MEASURED ⟧ 논문에 보고된 측정 결과 — run_20260627_222419</span>
+      <span class="mode-badge live">⟦ MEASURED ⟧ 논문에 보고된 측정 결과 — 전체 run_20260722_195713_full70 · 부분집합 run_20260627_222419</span>
 
       <div class="panel">
-        <h3>URFD 낙상 감지 — 배포 로직 그대로, 재튜닝 없음</h3>
+        <h3>URFD 낙상 감지 — 배포 로직 그대로, 재튜닝 없음 (전체 70시퀀스 기준)</h3>
         <div class="evi-grid">
-          <div class="evi-card"><b class="big" style="color:var(--ok)">1.00</b><span class="cap">Recall — 낙상 8/8 전건 감지. <b>단, 8시퀀스 랩 부분집합 결과</b>이며 현장 성능의 상한 근거로만 해석(논문 §4.1 원문 주의사항).</span></div>
-          <div class="evi-card"><b class="big">0.84</b><span class="cap">F1 (precision 0.73) — 오탐 3건은 깊이 숙임·눕기 동작, 자세+무동작 상태머신의 예상된 혼동.</span></div>
-          <div class="evi-card"><b class="big">≈3.3 s</b><span class="cap">중앙값 감지 지연 (99.5프레임 @30fps) — 700 ms 확인지연 포함.</span></div>
+          <div class="evi-card"><b class="big" style="color:var(--ok)">0.77</b><span class="cap">Recall — 전체 30낙상 중 23건 감지. 부분집합(8+8)에서는 1.00이었으나 전체 런이 상한이었음을 확인 — 미탐은 임계값을 순간 통과 후 700ms 확인창을 지속 못한 사례들(§4.1).</span></div>
+          <div class="evi-card"><b class="big">0.68</b><span class="cap">F1 (precision 0.61) — 오탐 15건은 깊은 숙임형 vs 의도적 눕기형으로 구조적 분리(부분집합 F1 0.84).</span></div>
+          <div class="evi-card"><b class="big">≈1.9 s</b><span class="cap">중앙값 감지 지연 — 전체 런 57프레임 @30fps (부분집합 99.5프레임 ≈3.3 s), 700 ms 확인지연 포함.</span></div>
           <div class="evi-card"><b class="big">0.11 ms</b><span class="cap">프레임당 후처리(REBA+화재 픽셀스캔, Colab x86 vCPU) — 병목은 신경망 추론이지 SHine-K 로직이 아님.</span></div>
           <div class="evi-card">
-            <span class="micro">Confusion (n=16)</span>
+            <span class="micro">Confusion (전체 n=70)</span>
             <div class="conf-mini">
-              <div style="background:var(--ok-bg);color:var(--ok)">TP 8</div>
-              <div style="background:var(--warn-bg);color:var(--warn)">FP 3</div>
-              <div style="background:var(--elev);color:var(--ink-3)">FN 0</div>
-              <div style="background:rgba(49,130,246,.1);color:var(--blue)">TN 5</div>
+              <div style="background:var(--ok-bg);color:var(--ok)">TP 23</div>
+              <div style="background:var(--warn-bg);color:var(--warn)">FP 15</div>
+              <div style="background:var(--danger-bg);color:var(--danger)">FN 7</div>
+              <div style="background:rgba(49,130,246,.1);color:var(--blue)">TN 25</div>
             </div>
           </div>
           <div class="evi-card"><b class="big" style="color:var(--cyan)">×10²–10³</b><span class="cap">업링크 절감 — 근로자당 스켈레톤 수 kbps vs H.264 스트림. 지금 이 콘솔의 업링크 패널이 같은 메시지 스키마로 실측 재현 중.</span></div>

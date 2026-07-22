@@ -112,7 +112,19 @@
     return r;
   }
 
-  /* URFD evaluation results shipped with the paper (run_20260627_222419) */
+  /* Full 70-sequence URFD run (run_20260722_195713_full70) — headline result */
+  var URFD_EVAL_FULL = {
+    dataset: 'UR Fall Detection (URFD), cam0 RGB — FULL benchmark',
+    model: 'MoveNet MultiPose Lightning (TF-Hub)',
+    run: 'run_20260722_195713_full70',
+    nFall: 30, nAdl: 40,
+    counts: { TP: 23, FP: 15, FN: 7, TN: 25 },
+    precision: 0.6053, recall: 0.7667, f1: 0.6765, accuracy: 0.6857,
+    latencyFrames: { mean: 76.52, median: 57 },
+    failureModes: 'Misses crossed thresholds only transiently (max tilt to 89°) without sustaining the 700 ms window; false alarms split into sustained deep-bending vs deliberate lying-down classes.'
+  };
+
+  /* Standing-fall subset shipped with the early validation (run_20260627_222419) */
   var URFD_EVAL = {
     dataset: 'UR Fall Detection (URFD), cam0 RGB',
     model: 'MoveNet MultiPose Lightning (TF-Hub)',
@@ -133,5 +145,5 @@
     ]
   };
 
-  global.SHineK = { FallSM: FallSM, rebaLevel: rebaLevel, URFD_EVAL: URFD_EVAL, ACT_IDX: ACT_IDX };
+  global.SHineK = { FallSM: FallSM, rebaLevel: rebaLevel, URFD_EVAL: URFD_EVAL, URFD_EVAL_FULL: URFD_EVAL_FULL, ACT_IDX: ACT_IDX };
 })(typeof window !== 'undefined' ? window : this);

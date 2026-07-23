@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SHine-K — In-Browser Edge Benchmark</title>
+<style>
+  body{font-family:system-ui,sans-serif;margin:24px;max-width:900px}
+  h1{font-size:20px} .note{color:#555;font-size:13px;line-height:1.5}
+  table{border-collapse:collapse;margin:16px 0;font-size:13px}
+  th,td{border:1px solid #999;padding:6px 10px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  #status{font-weight:600;margin:12px 0} pre{background:#f5f5f5;padding:10px;font-size:11px;overflow-x:auto}
+  canvas{border:1px solid #ccc}
+</style>
+</head>
+<body>
+<h1>SHine-K — In-Browser Edge Benchmark (same stack as the paper)</h1>
+<p class="note">
+Measures the deployed pipeline — MoveNet MultiPose Lightning (TF.js 4.20.0) +
+the SHine-K fall state machine / simplified REBA (<code>js/shinek-core.js</code>,
+identical logic evaluated on URFD) — on <b>this device</b>, per backend
+(WebGPU / WebGL / WASM). Input is a synthetic animated figure on a 640×480
+canvas: timing-valid, accuracy is <i>not</i> assessed here (that is the URFD
+benchmark's job). Protocol: 30 warm-up frames, 300 measured frames per backend.
+Append <code>?auto=1</code> to run automatically.
+</p>
+<div id="status">idle</div>
+<button id="run">Run benchmark</button>
+<canvas id="cv" width="640" height="480"></canvas>
+<div id="out"></div>
+<h3>JSON</h3><pre id="json">(pending)</pre>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@4.20.0/dist/tf-core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@4.20.0/dist/tf-converter.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.20.0/dist/tf-backend-webgl.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@4.20.0/dist/tf-backend-wasm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgpu@4.20.0/dist/tf-backend-webgpu.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js"></script>
+<script src="js/shinek-core.js"></script>
+<script>
+(function(){
+'use strict';
+var WARM=30, N=300;
+var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+var statusEl=document.getElementById('status');
+
+// 합성 입력: 프레임마다 자세가 변하는 관절 인형 (타이밍 측정용)
+function drawFrame(t){
+  ctx.fillStyle='#e8e8e8'; ctx.fillRect(0,0,640,480);
+  ctx.fillStyle='#777';
+  for(var i=0;i<5;i++){ctx.fillRect(40+i*120,60,60,18);}      // 배경 구조물
+  var lean=Math.sin(t/40)*0.8;                                 // 주기적 기울임
+  var cx=320+Math.sin(t/60)*80, cy=250;
+  ctx.strokeStyle='#222'; ctx.lineWidth=10; ctx.lineCap='round';
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(lean);
+  ctx.beginPath(); ctx.arc(0,-95,22,0,7); ctx.stroke();        // 머리
+  ctx.beginPath(); ctx.moveTo(0,-70); ctx.lineTo(0,20); ctx.stroke();   // 몸통
+  ctx.beginPath(); ctx.moveTo(0,-50); ctx.lineTo(-45,-10+Math.sin(t/15)*20); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,-50); ctx.lineTo(45,-10-Math.sin(t/15)*20); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,20); ctx.lineTo(-30,100); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,20); ctx.lineTo(30,100); ctx.stroke();
+  ctx.restore();
+}
+function pct(a,p){var s=a.slice().sort(function(x,y){return x-y;});return s[Math.min(s.length-1,Math.floor(s.length*p))];}
+function gpuName(){
+  try{var c=document.createElement('canvas');var gl=c.getContext('webgl');
+    var ext=gl.getExtension('WEBGL_debug_renderer_info');
+    return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'(masked)';}catch(e){return '(n/a)';}
+}
+function toKps(pose){
+  return pose.keypoints.map(function(k){return [k.x,k.y,(k.score!=null?k.score:0)];});
+}
+
+async function benchBackend(name){
+  statusEl.textContent='backend: '+name+' — initializing…';
+  if(name==='wasm'&&tf.wasm&&tf.wasm.setWasmPaths){
+    tf.wasm.setWasmPaths('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@4.20.0/dist/');
+  }
+  await tf.setBackend(name); await tf.ready();
+  var det=await poseDetection.createDetector(
+    poseDetection.SupportedModels.MoveNet,
+    {modelType:poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING, enableTracking:true});
+  var sm=new SHineK.FallSM({sens:1.0});
+  var inf=[], post=[], t0=performance.now();
+  for(var f=0; f<WARM+N; f++){
+    drawFrame(f);
+    var a=performance.now();
+    var poses=await det.estimatePoses(cv,{maxPoses:5});
+    var b=performance.now();
+    var c=b;
+    if(poses.length){
+      var kps=toKps(poses[0]);
+      sm.step(kps,640,480,b);
+      SHineK.rebaLevel(sm.tilt,30);
+      c=performance.now();
+    }
+    if(f>=WARM){ inf.push(b-a); post.push(c-b); }
+    if(f%50===0) statusEl.textContent='backend: '+name+' — frame '+f+'/'+(WARM+N);
+  }
+  var wall=performance.now()-t0;
+  det.dispose();
+  var heap=(performance.memory&&performance.memory.usedJSHeapSize)?
+      Math.round(performance.memory.usedJSHeapSize/1048576):null;
+  return {backend:tf.getBackend(), requested:name,
+    inf_median_ms:+pct(inf,0.5).toFixed(2), inf_p90_ms:+pct(inf,0.9).toFixed(2),
+    inf_mean_ms:+(inf.reduce(function(s,x){return s+x;},0)/inf.length).toFixed(2),
+    post_median_ms:+pct(post,0.5).toFixed(3),
+    e2e_median_ms:+(pct(inf,0.5)+pct(post,0.5)).toFixed(2),
+    fps_effective:+(1000/(pct(inf,0.5)+pct(post,0.5))).toFixed(1),
+    frames:N, warmup:WARM, wall_s:+(wall/1000).toFixed(1), js_heap_mb:heap};
+}
+
+async function run(){
+  var results={protocol:'MoveNet MULTIPOSE_LIGHTNING + SHineK.FallSM, 640x480 synthetic frames, '+WARM+' warmup / '+N+' measured',
+    device:{ua:navigator.userAgent, cores:navigator.hardwareConcurrency||null,
+            platform:navigator.platform, gpu:gpuName(), dpr:devicePixelRatio},
+    date:new Date().toISOString(), backends:[]};
+  var only=(location.search.match(/backend=([a-z]+)/)||[])[1];
+  var order=only?[only]:['webgpu','webgl','wasm'];   // ?backend=webgl → 단일 백엔드(신선한 세션) 측정
+  for(var i=0;i<order.length;i++){
+    try{ results.backends.push(await benchBackend(order[i])); }
+    catch(e){ results.backends.push({requested:order[i], error:String(e).slice(0,160)}); }
+  }
+  statusEl.textContent='done';
+  var rows=results.backends.map(function(r){
+    if(r.error) return '<tr><td>'+r.requested+'</td><td colspan="6">'+r.error+'</td></tr>';
+    return '<tr><td>'+r.backend+'</td><td>'+r.inf_median_ms+'</td><td>'+r.inf_p90_ms+'</td>'+
+      '<td>'+r.post_median_ms+'</td><td>'+r.e2e_median_ms+'</td><td>'+r.fps_effective+'</td><td>'+(r.js_heap_mb||'—')+'</td></tr>';
+  }).join('');
+  document.getElementById('out').innerHTML=
+    '<table><tr><th>backend</th><th>inference median (ms)</th><th>p90 (ms)</th>'+
+    '<th>state-machine median (ms)</th><th>end-to-end median (ms)</th><th>effective FPS</th><th>JS heap (MB)</th></tr>'+rows+'</table>';
+  document.getElementById('json').textContent=JSON.stringify(results,null,1);
+  window.__BENCH_RESULTS__=results; window.__BENCH_DONE__=true;
+}
+document.getElementById('run').addEventListener('click',run);
+if(location.search.indexOf('auto=1')>=0) window.addEventListener('load',function(){setTimeout(run,500);});
+})();
+</script>
+</body>
+</html>

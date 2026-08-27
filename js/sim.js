@@ -61,6 +61,7 @@
     zone:      { ko: '구역 침입',   en: 'ZONE',        sev: 'warn' },
     health:    { ko: '심박 이상',   en: 'VITALS',      sev: 'warn' },
     fatigue:   { ko: '과로 위험',   en: 'FATIGUE',     sev: 'warn' },
+    edge_loss: { ko: '엣지 노드 단절', en: 'EDGE LOSS', sev: 'crit' },
     recover:   { ko: '정상 복귀',   en: 'RECOVERED',   sev: 'ok' }
   };
 
@@ -101,49 +102,77 @@
     var H = 34;                       // body height px
     var lie = 0;                      // 0 upright → 1 lying
     if (w.fallT >= 0) lie = clamp((t - w.fallT) / 0.55, 0, 1);
-    var bend = 0;                     // trunk forward pitch (rad)
-    var armR = 0.25;                  // arm raise factor
-    var legSwing = 0, armSwing = 0, bob = 0;
 
-    if (w.pose === 'walk') {
-      legSwing = Math.sin(w.phase) * 0.30;
-      armSwing = -Math.sin(w.phase) * 0.22;
-      bob = Math.abs(Math.sin(w.phase)) * 1.2;
-      bend = 0.06;
-    } else if (w.pose === 'work') {
-      bend = 0.38 + 0.18 * Math.sin(w.phase * 0.5);
-      armR = 0.65 + 0.2 * Math.sin(w.phase * 0.5 + 1);
-    } else if (w.pose === 'idle') {
-      bend = 0.04 + 0.02 * Math.sin(w.phase * 0.3);
-    } else if (w.pose === 'heat') {
-      bend = 0.22 + 0.10 * Math.sin(w.phase * 0.2);
-      bob = Math.sin(w.phase * 0.2) * 0.8;
+    // ── smoothed animation state: poses glide into each other, no snapping ──
+    if (!w._a) w._a = {
+      bend: 0.1, armR: 0.25, gait: 0, face: w.facing, t: t,
+      seed: ((parseInt(String(w.id).replace(/\D/g, ''), 10) || 1) * 2.3999) % 6.283
+    };
+    var A = w._a;
+    var adt = clamp(t - A.t, 0, 0.1); A.t = t;
+    function go(cur, tgt, k) { return cur + (tgt - cur) * Math.min(1, adt * k); }
+
+    var bendT = 0.05, armT = 0.25, gaitT = 0;
+    if (w.pose === 'walk') { bendT = 0.07; armT = 0.2; gaitT = 1; }
+    else if (w.pose === 'work') {
+      // hold a bench posture; straighten up briefly every ~11 s, like a person
+      var cyc = ((t * 0.09 + A.seed) % 1 + 1) % 1;
+      var up = cyc < 0.14 ? (1 - Math.cos(cyc / 0.14 * 6.283)) * 0.5 : 0;
+      bendT = 0.30 + 0.04 * Math.sin(t * 0.33 + A.seed) - 0.24 * up;
+      armT = 0.62 - 0.30 * up;
     }
+    else if (w.pose === 'idle') { bendT = 0.035; armT = 0.22; }
+    else if (w.pose === 'heat') { bendT = 0.24 + 0.05 * Math.sin(t * 0.9 + A.seed); armT = 0.30; }
 
-    // local skeleton, origin at ground under pelvis, y up, then rotate for lie
+    A.bend = go(A.bend, bendT, 4);
+    A.armR = go(A.armR, armT, 4);
+    A.gait = go(A.gait, gaitT, 5);
+    A.face = go(A.face, w.facing, 7);   // turning passes through profile→front→profile
+
+    var bend = A.bend, armR = A.armR, g = A.gait, f = A.face;
+    var ph = w.phase;
+
+    // ── gait cycle: anti-phase legs with swing-phase foot lift and knee
+    //    flexion (no foot-slide), counter-phase arm swing, pelvic double-bob ──
+    var thighL = Math.sin(ph) * 0.34 * g, thighR = Math.sin(ph + Math.PI) * 0.34 * g;
+    var liftL = Math.max(0, Math.sin(ph - 0.5)) * 2.4 * g;
+    var liftR = Math.max(0, Math.sin(ph + Math.PI - 0.5)) * 2.4 * g;
+    var kneeL = Math.max(0, Math.sin(ph - 1.1)) * 1.6 * g;
+    var kneeR = Math.max(0, Math.sin(ph + Math.PI - 1.1)) * 1.6 * g;
+    var armSw = Math.sin(ph + Math.PI) * 0.26 * g;
+    var bob = (0.7 - 0.7 * Math.cos(2 * ph)) * 0.55 * g;
+    var swayX = Math.sin(ph) * 0.6 * g;
+
+    // hands busy at the bench (small, fast) — only when standing at work
+    var tool = (w.pose === 'work' && g < 0.3) ? Math.sin(t * 8.2 + A.seed * 3) * 1.3 : 0;
+    // idle: slow weight shift and gaze wander
+    var shift = (w.pose === 'idle') ? Math.tanh(Math.sin(t * 0.35 + A.seed)) * 1.4 : 0;
+    var gaze = (w.pose === 'idle') ? Math.sin(t * 0.22 + A.seed * 2) * 0.8 : 0;
+
     var hipY = 0.52 * H - bob, shY = 0.82 * H - bob, headY = 0.97 * H - bob;
     var hw = 0.115 * H, ww = 0.075 * H;
-    var f = w.facing;
 
     var P = [];                        // local [x, y(up)]
-    P[0]  = [0.06 * H * f, headY + 0.03 * H - bend * 6];        // nose
-    P[1]  = [0.04 * H * f, headY + 0.05 * H - bend * 6];
-    P[2]  = [0.02 * H * f, headY + 0.05 * H - bend * 6];
-    P[3]  = [0.00 * H * f, headY + 0.02 * H - bend * 6];
-    P[4]  = [-0.02 * H * f, headY + 0.02 * H - bend * 6];
+    var hd = bend * 6;                 // head drop with trunk pitch
+    P[0]  = [0.06 * H * f + gaze, headY + 0.03 * H - hd];        // nose
+    P[1]  = [0.04 * H * f + gaze, headY + 0.05 * H - hd];
+    P[2]  = [0.02 * H * f + gaze, headY + 0.05 * H - hd];
+    P[3]  = [0.00 * H * f, headY + 0.02 * H - hd];
+    P[4]  = [-0.02 * H * f, headY + 0.02 * H - hd];
     var bx = bend * 0.45 * H * f;                                // trunk shift from bend
-    P[5]  = [ hw + bx * 0.9, shY - bend * 4];                    // L shoulder
-    P[6]  = [-hw + bx * 0.9, shY - bend * 4];                    // R shoulder
-    var ax = (armR * 0.28 * H + armSwing * H * 0.2) * f;
-    P[7]  = [ hw + bx + ax * 0.5,  shY - 0.16 * H];              // elbows
-    P[8]  = [-hw + bx - armSwing * H * 0.2 * f + ax * 0.2, shY - 0.16 * H];
-    P[9]  = [ hw + bx + ax,        shY - 0.30 * H + armR * 6];   // wrists
-    P[10] = [-hw + bx - armSwing * H * 0.3 * f, shY - 0.30 * H];
-    P[11] = [ ww, hipY]; P[12] = [-ww, hipY];                    // hips
-    P[13] = [ ww + legSwing * H * 0.5 * f, 0.27 * H];            // knees
-    P[14] = [-ww - legSwing * H * 0.5 * f, 0.27 * H];
-    P[15] = [ ww + legSwing * H * f, 0.5];                       // ankles
-    P[16] = [-ww - legSwing * H * f, 0.5];
+    P[5]  = [ hw + bx * 0.9 + swayX, shY - bend * 4];            // L shoulder
+    P[6]  = [-hw + bx * 0.9 + swayX, shY - bend * 4];            // R shoulder
+    var reach = armR * 0.28 * H;
+    P[7]  = [ hw + bx + (reach * 0.5 + armSw * H * 0.18) * f, shY - 0.16 * H + tool * 0.4];
+    P[8]  = [-hw + bx + (reach * 0.2 - armSw * H * 0.18) * f, shY - 0.16 * H - tool * 0.3];
+    P[9]  = [ hw + bx + (reach + armSw * H * 0.26) * f, shY - 0.30 * H + armR * 6 + tool];
+    P[10] = [-hw + bx + (reach * 0.55 - armSw * H * 0.26) * f, shY - 0.30 * H + armR * 5 - tool * 0.8];
+    P[11] = [ ww + swayX * 0.7 + shift, hipY];                   // hips
+    P[12] = [-ww + swayX * 0.7 + shift, hipY];
+    P[13] = [ ww + thighL * H * 0.5 * f + shift, 0.27 * H + kneeL * 0.4];   // knees
+    P[14] = [-ww + thighR * H * 0.5 * f + shift, 0.27 * H + kneeR * 0.4];
+    P[15] = [ ww + thighL * H * 0.95 * f + shift * 0.3, 0.5 + liftL];       // ankles
+    P[16] = [-ww + thighR * H * 0.95 * f + shift * 0.3, 0.5 + liftR];
 
     // nose forward relative to spine when bending
     P[0][0] += bend * 0.55 * H * f;
@@ -152,15 +181,20 @@
     var kps = [];
     var ang = lie * 1.32;                         // ~76°: lying but limbs keep structure
     var cos = Math.cos(ang), sin = Math.sin(ang);
-    // human micro-movement so a working (not collapsed) body never reads as
-    // "inactive" to the deployed state machine — same as real muscle sway
-    var jit = lie > 0 ? 0 : (w.pose === 'work' ? 3.2 : w.pose === 'walk' ? 2.2 : 2.5);
+    // coherent postural sway (strongest at the head, near zero at the feet)
+    // plus a barely-visible tremor so a live body never reads as frozen —
+    // bodies move as one, not as 17 independent joints
+    var sw1 = Math.sin(t * 1.1 + A.seed) * 0.55 + Math.sin(t * 0.47 + A.seed * 2) * 0.4;
+    var sw2 = Math.cos(t * 0.9 + A.seed * 1.3) * 0.35;
+    var DEPTH = [1, 1, 1, 1, 1, 0.8, 0.8, 0.65, 0.65, 0.55, 0.55, 0.4, 0.4, 0.18, 0.18, 0.05, 0.05];
     for (var i = 0; i < 17; i++) {
       var lx = P[i][0], ly = P[i][1];
       var rx = lx * Math.cos(ang * 0.4) + ly * sin * f;
       var ry = ly * cos - lx * sin * f * 0.15;
-      rx += Math.sin(w.phase * 5.1 + i * 1.7) * jit * 0.5;
-      ry += Math.cos(w.phase * 4.3 + i * 2.3) * jit * 0.35;
+      if (lie === 0) {
+        rx += sw1 * DEPTH[i] + Math.sin(t * 1.7 + i * 2.1 + A.seed) * 0.22;
+        ry += sw2 * DEPTH[i] * 0.5 + Math.cos(t * 1.5 + i * 1.3 + A.seed) * 0.16;
+      }
       kps.push([w.x + rx, w.y - ry, 0.9]);
     }
     return kps;
@@ -757,6 +791,8 @@
     },
     /* live webcam bridge: events from js/live.js enter the same bus */
     ingestLive: function (kind, extra) { emit(kind, 'CAM-07', 'LIVE', extra); },
+    /* liveness watchdog bridge: system-level events (edge_loss/recover) */
+    ingestSystem: function (kind, nodeId, extra) { emit(kind, nodeId, 'SYS', extra); },
     ingestLivePose: function (nPersons) {
       pushUplink({ type: 'pose', id: 'CAM-07', persons: nPersons, kp: 17 * nPersons, b: POSE_MSG_BYTES * nPersons });
     },

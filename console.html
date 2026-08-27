@@ -33,7 +33,7 @@
   <span class="spacer"></span>
   <span class="badge ai" id="cc-org" style="display:none"></span>
   <span class="clock mono" id="clock">--:--:--</span>
-  <span class="pill-online"><i></i>EDGE ONLINE</span>
+  <span class="pill-online idle" id="edge-pill"><i></i>EDGE · NO NODE</span>
   <a class="paper-link" href="portal.html" id="portal-link">포털</a>
   <a class="paper-link" href="index.html">논문 소개 ↗</a>
 </header>
@@ -49,7 +49,7 @@
         <div class="site-tabs" id="site-tabs" role="group" aria-label="사이트 선택"></div>
         <div class="map-wrap">
           <canvas id="map" width="700" height="380" aria-label="공장 평면 디지털 트윈"></canvas>
-          <span class="map-hint">CONTROL TWIN — reconstructed from de-identified skeletons · no video received</span>
+          <span class="map-hint">CONTROL TWIN — reconstructed from pseudonymized skeletons · no video received</span>
         </div>
 
         <div class="cam-wall" id="cam-wall">
@@ -269,6 +269,7 @@
 
 <script src="js/auth.js"></script>
 <script src="js/shinek-core.js"></script>
+<script src="js/liveness.js"></script>
 <script src="js/sim.js"></script>
 <script src="js/live.js"></script>
 <script src="js/console.js"></script>

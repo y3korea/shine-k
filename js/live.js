@@ -40,6 +40,20 @@
     if (el) { el.innerHTML = html; el.className = 'live-status ' + (cls || ''); }
   }
 
+  /* liveness heartbeat for the in-page CAM-07 edge (live/replay only) —
+   * same 1 Hz protocol as worksite.html; the console watchdog receives it
+   * over BroadcastChannel and flags silence within 5 s. */
+  var hb = null;
+  function hbStart() {
+    if (!hb && global.SHLiveness) {
+      hb = global.SHLiveness.startEdgeHeartbeat({
+        node: 'CAM-07-live',
+        mode: function () { return L.mode; }
+      });
+    }
+  }
+  function hbStop() { if (hb) { hb.stop(); hb = null; } }
+
   var BONES = [[15,13],[13,11],[16,14],[14,12],[11,12],[5,11],[6,12],[5,6],[5,7],[7,9],[6,8],[8,10]];
 
   function drawSkeleton(ctx, kps, color, scaleX, scaleY) {
@@ -252,6 +266,7 @@
   function stop() {
     L.mode = 'off';
     L.startGen++;                       // invalidate any in-flight start() chain
+    hbStop();
     cancelAnimationFrame(L.raf);
     if (L.stream) { L.stream.getTracks().forEach(function (t) { t.stop(); }); L.stream = null; }
     if (L.video) L.video.style.display = 'none';
@@ -272,6 +287,7 @@
     if (L.cv) L.cv.style.transform = 'none';   // replay scene is not mirrored
     setStatus((reason ? reason + ' — ' : '') + (EN() ? 'synthetic REPLAY driving the same pipeline' : '합성 REPLAY로 동일 파이프라인 시연 중'), 'warn');
     if (global.SHSim) global.SHSim.setLiveTile(true);
+    hbStart();
     L.raf = requestAnimationFrame(replayLoop);
   }
 
@@ -319,6 +335,7 @@
       L.mode = 'live';
       setStatus(EN() ? '<b>● LIVE</b> — frames never leave this tab · events only' : '<b>● LIVE</b> — 영상은 이 탭 밖으로 나가지 않습니다 · 이벤트만 전송', 'live');
       if (global.SHSim) global.SHSim.setLiveTile(true);
+      hbStart();
       liveLoop();
     }).catch(function (e) {
       if (e && e.stale) return;          // superseded by stop()/replay — stay silent

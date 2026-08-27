@@ -12,6 +12,16 @@
   function FallSM(opts) {
     opts = opts || {};
     this.sens = opts.sens != null ? opts.sens : 1.0;
+    /* contextual descent-velocity gate (evaluated in the IEEE Access
+     * revision, default OFF to preserve the evaluated deployed operating
+     * point): when velGateS is set (seconds), a down posture confirms as
+     * 'fall' only if a hip descent faster than gateVth frame-heights/s
+     * occurred within velGateS seconds before/at the down onset —
+     * deliberate slow lying/bending never shows that descent.
+     * URFD dev sweep: gateVth 0.30 removes 5/15 FPs at unchanged recall;
+     * 0.40 removes 9/15 FPs at the cost of one fall. */
+    this.velGateS = opts.velGateS != null ? opts.velGateS : null;
+    this.gateVth = opts.gateVth != null ? opts.gateVth : 0.40;
     this.reset();
   }
 
@@ -22,6 +32,7 @@
     this.lastKp = null;
     this.state = 'normal';
     this.tilt = 0; this.aspect = 0; this.vel = 0; this.mv = 0;
+    this.lastRapid = null;
   };
 
   FallSM.prototype._v = function (kps, i) {
@@ -80,10 +91,16 @@
     var TILT_DOWN = 52 * this.sens, ASP_DOWN = 1.0 * this.sens, VEL_DROP = 0.9 / this.sens;
     var isDown = (tilt > TILT_DOWN) || (aspect > ASP_DOWN);
     var rapid = vel > VEL_DROP;
+    if (vel > this.gateVth) this.lastRapid = now;
 
     if (isDown) {
       if (!this.downSince) this.downSince = now;
-      this.state = (now - this.downSince > 700) ? 'fall' : 'warn';
+      var confirmed = (now - this.downSince > 700);
+      if (confirmed && this.velGateS != null) {
+        confirmed = this.lastRapid != null &&
+                    this.lastRapid >= this.downSince - this.velGateS * 1000;
+      }
+      this.state = confirmed ? 'fall' : 'warn';
     } else if (rapid) {
       this.state = 'warn'; this.downSince = null;
     } else {

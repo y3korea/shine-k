@@ -173,5 +173,20 @@
 
   /* opening feed line so the page is alive immediately */
   pushFeed('recover', '엣지 노드 기동 — 센터 구독 채널 연결(이벤트 전용)', false);
-  pushUp({ type: 'hello', node: 'worksite-edge', schema: 'pose|alert', video: false }, true);
+  pushUp({ type: 'hello', node: 'worksite-edge', schema: 'pose|alert|hb', video: false }, true);
+
+  /* liveness heartbeat → control twin (BroadcastChannel cross-tab transport).
+   * 1 Hz beat; the console watchdog flags this node within 5 s of silence.
+   * If the browser throttles this tab's timers below 1 Hz, the beat stops
+   * and the center alarms — lifecycle failures are detectable, not silent. */
+  if (global.SHLiveness) {
+    global.SHLiveness.startEdgeHeartbeat({
+      node: 'worksite-edge',
+      mode: function () {
+        var live = global.SHLive && global.SHLive.state;
+        return live ? live.mode : 'sim';
+      },
+      onEcho: function (msg) { pushUp(msg, false); }
+    });
+  }
 })(window);

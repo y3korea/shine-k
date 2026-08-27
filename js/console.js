@@ -200,7 +200,7 @@
     while (traceLog.children.length > 20) traceLog.removeChild(traceLog.lastChild);
   }
 
-  var LADDER_BY_KIND = { fall: 3, inactive: 3, fire: 3, ppe: 1, heat: 2, posture: 1, health: 2, fatigue: 2, zone: 1, recover: 0 };
+  var LADDER_BY_KIND = { fall: 3, inactive: 3, fire: 3, ppe: 1, heat: 2, posture: 1, health: 2, fatigue: 2, zone: 1, edge_loss: 2, recover: 0 };
   function onBusEvent(ev) {
     var conf = (0.72 + Math.random() * 0.24).toFixed(2);
     var fused = Math.min(0.99, +conf + 0.08).toFixed(2);
@@ -393,6 +393,51 @@
     kWbgt: document.getElementById('k-wbgt')
   });
   route();
+
+  /* ── edge liveness watchdog — detects a silent edge node within 5 s ──
+   * Edge pages (worksite.html) beat at 1 Hz over BroadcastChannel; a node
+   * that stays silent past the 4 s window (swept every 500 ms) raises a
+   * system-level EDGE LOSS alert on the same bus as safety events. */
+  if (window.SHLiveness) {
+    var wd = window.SHLiveness.startWatchdog({
+      onNode: function (node) {
+        addTrace('CONNECT', 'liveness: edge node "' + node + '" registered — 1 Hz heartbeat');
+      },
+      onLoss: function (node, silenceMs) {
+        Sim.ingestSystem('edge_loss', node, { silence_ms: Math.round(silenceMs) });
+        addTrace('CONNECT', 'liveness watchdog: "' + node + '" silent ' +
+          (silenceMs / 1000).toFixed(1) + ' s → EDGE LOSS raised (system alert)');
+      },
+      onRestore: function (node) {
+        Sim.ingestSystem('recover', node, { note: 'heartbeat restored' });
+        addTrace('CONNECT', 'liveness: "' + node + '" heartbeat restored');
+      },
+      onBye: function (node) {
+        addTrace('CONNECT', 'liveness: "' + node + '" clean shutdown (bye)');
+      }
+    });
+    /* the header pill is now a VERIFIED liveness readout, not demo state */
+    var pill = document.getElementById('edge-pill');
+    if (pill) setInterval(function () {
+      var ids = Object.keys(wd.nodes);
+      var alive = 0, lost = 0;
+      ids.forEach(function (id) {
+        var n = wd.nodes[id];
+        if (n.bye) return;              // departed cleanly — not an outage
+        if (n.lost) lost++; else if (n.ever) alive++;
+      });
+      pill.classList.remove('idle', 'lost');
+      if (lost > 0) {
+        pill.classList.add('lost');
+        pill.innerHTML = '<i></i>EDGE LOSS · ' + lost;
+      } else if (alive > 0) {
+        pill.innerHTML = '<i></i>EDGE ONLINE · ' + alive + ' · HB';
+      } else {
+        pill.classList.add('idle');
+        pill.innerHTML = '<i></i>EDGE · NO NODE';
+      }
+    }, 500);
+  }
 
   /* a first ambient event so the feed is never empty */
   setTimeout(function () { Sim.scenario('ppe'); }, 4000);

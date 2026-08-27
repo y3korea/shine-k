@@ -18,10 +18,11 @@
      * 'fall' only if a hip descent faster than gateVth frame-heights/s
      * occurred within velGateS seconds before/at the down onset —
      * deliberate slow lying/bending never shows that descent.
-     * URFD dev sweep: gateVth 0.30 removes 5/15 FPs at unchanged recall;
-     * 0.40 removes 9/15 FPs at the cost of one fall. */
+     * Featured operating point from the paper (Table 5): gateVth 0.30 with
+     * velGateS 2 s — URFD FPs 15->10 at unchanged recall; GMDCSA-24
+     * transfer FPs 40->8 (precision 0.664->0.895) at recall 0.861. */
     this.velGateS = opts.velGateS != null ? opts.velGateS : null;
-    this.gateVth = opts.gateVth != null ? opts.gateVth : 0.40;
+    this.gateVth = opts.gateVth != null ? opts.gateVth : 0.30;
     this.reset();
   }
 

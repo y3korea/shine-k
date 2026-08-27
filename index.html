@@ -52,7 +52,7 @@
         <h1 data-en="The browser <em>is</em> the edge AI.<br>Safety monitoring without video.">브라우저가 곧 <em>엣지 AI</em>입니다.<br>영상 없이 안전을 관제합니다.</h1>
         <p class="sub" data-en="SHine-K (Safety and Health in Enterprise) is an install-free web platform for SME manufacturing: every shop-floor browser runs pose, fall, PPE and fire analysis locally, and only pseudonymized skeletons and risk events — never pixels — reach the central control twin. Fatigue tracking joins via wearables (PoC).">
           SHine-K(Safety and Health in Enterprise)는 설치가 필요 없는 중소제조 안전·건강 플랫폼입니다. 현장 브라우저가 직접
-          자세·낙상·PPE·화재를 분석하고, 중앙 관제 트윈에는 비식별 스켈레톤과 위험 이벤트만 —
+          자세·낙상·PPE·화재를 분석하고, 중앙 관제 트윈에는 가명처리 스켈레톤과 위험 이벤트만 —
           픽셀은 단 하나도 — 전송합니다.
         </p>
         <div class="hero-stats">
@@ -165,7 +165,7 @@
     </figure>
     <figure class="arch-fig reveal">
       <img src="img/Figure2.png" alt="엣지-프라이버시 데이터플로우: 영상은 현장에 남고 17개 스켈레톤 좌표와 이벤트만 센터로 전송" loading="lazy" />
-      <figcaption>Figure 2 — 영상무전송 경계: 현장(엣지)과 관제센터 사이를 넘는 것은 비식별 스켈레톤·이벤트뿐. 점선 = 설계 목표, 실선 = 구현·검증 (논문 원본 그림)</figcaption>
+      <figcaption>Figure 2 — 영상무전송 경계: 현장(엣지)과 관제센터 사이를 넘는 것은 가명처리 스켈레톤·이벤트뿐. 점선 = 설계 목표, 실선 = 구현·검증 (논문 원본 그림)</figcaption>
     </figure>
     <figure class="arch-fig tall reveal">
       <img src="img/Figure3.png" alt="작동 워크플로우: 급성 위험은 즉시 경보·출동, 누적 위험은 개인화 회복 코칭과 재측정의 닫힌 피드백 루프" loading="lazy" />
@@ -311,9 +311,9 @@
       </div>
       <div class="priv-card net reveal">
         <div class="head" data-en="What leaves the site (all of it)">사업장 밖으로 나가는 것 — 이것이 전부입니다</div>
-        <canvas id="priv-right" width="420" height="200" aria-label="비식별 스켈레톤 전송 개념도"></canvas>
-        <div class="body" data-en="De-identified 17-keypoint skeletons and structured risk events. Item-level opt-in, pseudonymous IDs, purpose limitation, on-device by default (§3.4).">
-          비식별 17-키포인트 스켈레톤과 구조화된 위험 이벤트뿐. 항목별 옵트인 · 가명 ID · 목적 제한 ·
+        <canvas id="priv-right" width="420" height="200" aria-label="가명처리 스켈레톤 전송 개념도"></canvas>
+        <div class="body" data-en="Pseudonymized 17-keypoint skeletons and structured risk events. Item-level opt-in, pseudonymous IDs, purpose limitation, on-device by default (§3.4).">
+          가명처리 17-키포인트 스켈레톤과 구조화된 위험 이벤트뿐. 항목별 옵트인 · 가명 ID · 목적 제한 ·
           기기 내 처리 기본값 (§3.4).</div>
       </div>
     </div>
